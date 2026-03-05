@@ -1,6 +1,6 @@
 # π PIOS — Project Intelligence Operating System
 
-![Version](https://img.shields.io/badge/version-0.1-orange) ![License](https://img.shields.io/badge/license-MIT-orange)
+![Version](https://img.shields.io/badge/version-0.3.0-orange) ![License](https://img.shields.io/badge/license-MIT-orange)
 
 PIOS is a structured, tool-agnostic framework for **starting and finishing** AI-assisted software projects.
 
@@ -38,7 +38,8 @@ PIOS exists to convert AI assistance into **repeatable outcomes**.
 
 ## Repository Layout
 
-- `templates/` — reusable project artifacts (specs, plans, tasks, decision logs)
+- `cmd/pios/` — the Golang PIOS validator CLI
+- `templates/` — reusable project artifacts (specs, plans, tasks, decision logs) safely embedded into the CLI
 - `agents/` — role-specific agent instructions
 - `tool-adapters/` — guidance for using PIOS with specific tools
 - `profiles/` — shared standards + stack templates
@@ -47,18 +48,24 @@ PIOS exists to convert AI assistance into **repeatable outcomes**.
 ---
 
 ## Quick Start
+PIOS comes with a native CLI to instantly copy the templates into your new repository and programmatically track your AI agent's progress.
 
-1. Copy templates into your new repo:
-   - `templates/min-spec.md`
-   - `templates/spec-lock.md`
-   - `templates/plan-lock.md`
-   - `templates/tasks.md`
-   - `templates/decision-log.md`
-2. Fill out **Minimum Spec**: Keep it short. Avoid premature details.
-3. Run **Spec Lock**: Resolve only the highest-impact unknowns.
-4. Generate **Plan Lock**: Architecture, data flow, constraints, risks, and test strategy.
-5. Convert plan → **TASKS.md**: Small tasks, each testable, each with acceptance criteria.
-6. Scaffold + iterate: Execute the autopilot loop until MVP.
+**Install the CLI:**
+```bash
+go install github.com/cclavin/pios/cmd/pios@latest
+```
+
+**Initialize a new project:**
+```bash
+pios init
+```
+This will eject the templates and `STATUS.md` into your current directory. Follow the phase gates:
+
+1. Fill out **Minimum Spec**: Keep it short. Avoid premature details.
+2. Run **Spec Lock**: Resolve only the highest-impact unknowns.
+3. Generate **Plan Lock**: Architecture, data flow, constraints, risks, and test strategy.
+4. Convert plan → **TASKS.md**: Small tasks, each testable, each with acceptance criteria.
+5. **Autopilot Loop**: Point an AI Agent at the repository. The agent can use `pios validate` and `pios status` to autonomously burn down `TASKS.md`.
 
 ---
 
@@ -77,8 +84,8 @@ Track the following metrics:
 
 ## Roadmap
 
-- v0.1 — templates, agents, adapters, workflows, backtest harness
-- v0.2 — validation scripts (spec completeness + gate checks)
-- v0.3 — CLI: `pios init / validate / export`
-- v0.4 — interop exporters for Cursor / Continue / Windsurf formats
-- v1.0 — stable “project OS” release
+- [x] v0.1 — templates, agents, adapters, workflows, backtest harness
+- [x] v0.2 — machine-readable state
+- [x] v0.3 — Golang CLI: `pios init / validate / export`
+- [ ] v0.4 — interop exporters for Cursor / Continue / Windsurf formats
+- [ ] v1.0 — stable “project OS” release
