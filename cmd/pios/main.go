@@ -6,11 +6,16 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/cclavin/pios/templates"
 	"gopkg.in/yaml.v3"
 )
+
+var pendingTaskRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[\s\]`)
+var inProgressTaskRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[/\]`)
+var completedTaskRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[[xX]\]`)
 
 type StatusFrontmatter struct {
 	PiosVersion  string `yaml:"pios_version"`
@@ -95,7 +100,13 @@ func cmdInit() {
 }
 
 func cmdStatus() {
-	data, err := os.ReadFile("STATUS.md")
+	rootDir, err := findProjectRoot()
+	if err != nil {
+		fmt.Printf("{\"error\": \"%v\"}\n", err)
+		os.Exit(1)
+	}
+
+	data, err := os.ReadFile(filepath.Join(rootDir, "STATUS.md"))
 	if err != nil {
 		fmt.Printf("{\"error\": \"Failed to read STATUS.md: %v\"}\n", err)
 		os.Exit(1)
@@ -109,7 +120,7 @@ func cmdStatus() {
 		os.Exit(1)
 	}
 
-	pending, inProg, done := countTasks("templates/tasks.md")
+	pending, inProg, done := countTasks(filepath.Join(rootDir, "templates", "tasks.md"))
 
 	out := map[string]interface{}{
 		"current_gate": status.CurrentGate,
@@ -129,7 +140,13 @@ func cmdStatus() {
 }
 
 func cmdValidate() {
-	data, err := os.ReadFile("templates/tasks.md")
+	rootDir, err := findProjectRoot()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	data, err := os.ReadFile(filepath.Join(rootDir, "templates", "tasks.md"))
 	if err != nil {
 		fmt.Println("Error: templates/tasks.md not found.")
 		os.Exit(1)
@@ -139,10 +156,7 @@ func cmdValidate() {
 	unchecked := 0
 
 	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		
-		// Catch any empty checkboxes in the tasks checklist
-		if strings.HasPrefix(trimmed, "- [ ]") || strings.HasPrefix(trimmed, "### [ ]") || strings.HasPrefix(trimmed, "### [/]") {
+		if pendingTaskRe.MatchString(line) || inProgressTaskRe.MatchString(line) {
 			unchecked++
 		}
 	}
@@ -154,6 +168,27 @@ func cmdValidate() {
 
 	fmt.Println("Validation Passed: All task criteria are met.")
 	os.Exit(0)
+}
+
+func findProjectRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for {
+		if _, err := os.Stat(filepath.Join(dir, ".git")); err == nil {
+			return dir, nil
+		}
+		if _, err := os.Stat(filepath.Join(dir, "STATUS.md")); err == nil {
+			return dir, nil
+		}
+		parentDir := filepath.Dir(dir)
+		if parentDir == dir {
+			break
+		}
+		dir = parentDir
+	}
+	return "", fmt.Errorf("could not find project root containing .git or STATUS.md")
 }
 
 // extractFrontmatter isolates the metadata block between two '---' lines
@@ -186,12 +221,11 @@ func countTasks(filepath string) (pending, inProgress, completed int) {
 	}
 	lines := strings.Split(string(data), "\n")
 	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "### [ ]") {
+		if pendingTaskRe.MatchString(line) {
 			pending++
-		} else if strings.HasPrefix(trimmed, "### [/]") {
+		} else if inProgressTaskRe.MatchString(line) {
 			inProgress++
-		} else if strings.HasPrefix(trimmed, "### [x]") {
+		} else if completedTaskRe.MatchString(line) {
 			completed++
 		}
 	}

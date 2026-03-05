@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.3.1] - 2026-03-05
+### Fixed
+- Fixed directory traversal logic in `pios status` and `pios validate` by implementing `findProjectRoot()`.
+- Replaced brittle string matching with robust RegEx parsing for `TASKS.md` completion checks.
+- Aligned `tool-adapters/*.md` with `CONTRIBUTING.md` by explicitly appending required `pios` instructions for CI loops.
+- Added `main_test.go` test harness.
+- Configured GitHub Actions CI pipeline.
+
 ## [v0.3.0] - 2026-03-05
 ### Added
 - Go Standard Project Layout: `go.mod` initialized at repository root.
