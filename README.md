@@ -4,7 +4,7 @@
 
 PIOS is a structured, tool-agnostic framework for **starting and finishing** AI-assisted software projects.
 
-It’s designed for builders who use AI tools (Claude, GPT, Codex, Cursor, Continue, Windsurf, etc.) and want to reduce:
+It’s designed for builders who use AI tools (Claude, GPT, Codex, Cursor, Continue, Windsurf, OpenClaw, etc.) and want to reduce:
 - endless back-and-forth prompting
 - context drift / "context rot"
 - vague planning that never turns into a repo
