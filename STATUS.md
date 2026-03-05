@@ -1,3 +1,9 @@
+---
+pios_version: "0.2"
+current_phase: "v0.1 scaffolding"
+current_gate: "Plan Lock"
+status: "In Progress"
+---
 # STATUS
 
 ## Current Phase

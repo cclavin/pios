@@ -1,3 +1,9 @@
+---
+pios_version: "0.2"
+current_phase: ""
+current_gate: ""
+status: ""
+---
 # STATUS
 
 ## Current Phase
