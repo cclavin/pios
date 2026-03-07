@@ -13,15 +13,29 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var pendingTaskRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[\s\]`)
-var inProgressTaskRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[/\]`)
-var completedTaskRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[[xX]\]`)
+const tasksContractVersion = "0.4"
+
+var pendingTaskRe = regexp.MustCompile(`^(?i)\s*(?:###\s+|-\s+)\[\s\]`)
+var inProgressTaskRe = regexp.MustCompile(`^(?i)\s*(?:###\s+|-\s+)\[/\]`)
+var completedTaskRe = regexp.MustCompile(`^(?i)\s*(?:###\s+|-\s+)\[[xX]\]`)
+var checkboxLikeRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[[^\]]*\]`)
+
+var allowedStatusValues = map[string]struct{}{
+	"Not Started": {},
+	"In Progress": {},
+	"Blocked":     {},
+	"Done":        {},
+}
 
 type StatusFrontmatter struct {
 	PiosVersion  string `yaml:"pios_version"`
 	CurrentPhase string `yaml:"current_phase"`
 	CurrentGate  string `yaml:"current_gate"`
 	Status       string `yaml:"status"`
+}
+
+type TasksFrontmatter struct {
+	PiosContractVersion string `yaml:"pios_contract_version"`
 }
 
 func main() {
@@ -47,13 +61,13 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Println("PIOS - Project Intelligence Operating System CLI")
+	fmt.Println("PIOS - AI Project Execution Contract CLI")
 	fmt.Println("\nUsage:")
 	fmt.Println("  pios <command>")
 	fmt.Println("\nCommands:")
 	fmt.Println("  init        Initialize PIOS templates in the current directory")
 	fmt.Println("  status      Parse STATUS.md and output a JSON summary")
-	fmt.Println("  validate    Scan Tasks to validate if phase exit criteria are met")
+	fmt.Println("  validate    Validate tasks contract and phase gate completion")
 }
 
 func cmdInit() {
@@ -64,7 +78,6 @@ func cmdInit() {
 		os.Exit(1)
 	}
 
-	// Read from the embedded filesystem
 	files, err := fs.ReadDir(templates.FS, ".")
 	if err != nil {
 		fmt.Printf("Error reading embedded templates: %v\n", err)
@@ -75,7 +88,7 @@ func cmdInit() {
 		if file.IsDir() {
 			continue
 		}
-		
+
 		fileName := file.Name()
 		data, err := templates.FS.ReadFile(fileName)
 		if err != nil {
@@ -83,7 +96,6 @@ func cmdInit() {
 			continue
 		}
 
-		// Pull the status template to the root folder out of convenience
 		if fileName == "status-template.md" {
 			if _, err := os.Stat("STATUS.md"); os.IsNotExist(err) {
 				_ = os.WriteFile("STATUS.md", data, 0644)
@@ -96,7 +108,7 @@ func cmdInit() {
 		}
 	}
 
-	fmt.Println("✓ PIOS templates successfully initialized.")
+	fmt.Println("PIOS templates successfully initialized.")
 }
 
 func cmdStatus() {
@@ -112,11 +124,9 @@ func cmdStatus() {
 		os.Exit(1)
 	}
 
-	frontmatterRaw := extractFrontmatter(string(data))
-
-	var status StatusFrontmatter
-	if err := yaml.Unmarshal([]byte(frontmatterRaw), &status); err != nil {
-		fmt.Printf("{\"error\": \"Failed to parse YAML frontmatter: %v\"}\n", err)
+	status, err := parseStatusFrontmatter(string(data))
+	if err != nil {
+		fmt.Printf("{\"error\": \"%v\"}\n", err)
 		os.Exit(1)
 	}
 
@@ -152,21 +162,41 @@ func cmdValidate() {
 		os.Exit(1)
 	}
 
+	version, err := parseTasksContractVersion(string(data))
+	if err != nil {
+		fmt.Printf("Validation Failed: %v\n", err)
+		os.Exit(1)
+	}
+	if version != tasksContractVersion {
+		fmt.Printf("Validation Failed: unsupported tasks contract version '%s'. Expected '%s'.\n", version, tasksContractVersion)
+		os.Exit(1)
+	}
+
 	lines := strings.Split(string(data), "\n")
 	unchecked := 0
+	malformedLines := make([]int, 0)
 
-	for _, line := range lines {
+	for i, line := range lines {
+		if checkboxLikeRe.MatchString(line) && !pendingTaskRe.MatchString(line) && !inProgressTaskRe.MatchString(line) && !completedTaskRe.MatchString(line) {
+			malformedLines = append(malformedLines, i+1)
+			continue
+		}
 		if pendingTaskRe.MatchString(line) || inProgressTaskRe.MatchString(line) {
 			unchecked++
 		}
 	}
 
-	if unchecked > 0 {
-		fmt.Printf("Validation Failed: Found %d unchecked or in-progress items in tasks.\n", unchecked)
+	if len(malformedLines) > 0 {
+		fmt.Printf("Validation Failed: malformed checkbox syntax at lines %v.\n", malformedLines)
 		os.Exit(1)
 	}
 
-	fmt.Println("Validation Passed: All task criteria are met.")
+	if unchecked > 0 {
+		fmt.Printf("Validation Failed: found %d unchecked or in-progress items in tasks.\n", unchecked)
+		os.Exit(1)
+	}
+
+	fmt.Println("Validation Passed: all task criteria are met.")
 	os.Exit(0)
 }
 
@@ -191,33 +221,89 @@ func findProjectRoot() (string, error) {
 	return "", fmt.Errorf("could not find project root containing .git or STATUS.md")
 }
 
-// extractFrontmatter isolates the metadata block between two '---' lines
-func extractFrontmatter(content string) string {
-	lines := strings.Split(content, "\n")
-	var fm []string
-	inFm := false
-	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		if trimmed == "---" {
-			if !inFm {
-				inFm = true
-				continue
-			} else {
-				break
-			}
-		}
-		if inFm {
-			fm = append(fm, line)
-		}
+func parseStatusFrontmatter(content string) (StatusFrontmatter, error) {
+	var status StatusFrontmatter
+
+	frontmatterRaw, ok := extractFrontmatter(content)
+	if !ok {
+		return status, fmt.Errorf("failed to parse STATUS.md: missing YAML frontmatter")
 	}
-	return strings.Join(fm, "\n")
+
+	if err := yaml.Unmarshal([]byte(frontmatterRaw), &status); err != nil {
+		return status, fmt.Errorf("failed to parse YAML frontmatter: %v", err)
+	}
+
+	status.PiosVersion = strings.TrimSpace(status.PiosVersion)
+	status.CurrentPhase = strings.TrimSpace(status.CurrentPhase)
+	status.CurrentGate = strings.TrimSpace(status.CurrentGate)
+	status.Status = strings.TrimSpace(status.Status)
+
+	if status.PiosVersion == "" {
+		return status, fmt.Errorf("failed to parse STATUS.md: missing required frontmatter key 'pios_version'")
+	}
+	if status.CurrentPhase == "" {
+		return status, fmt.Errorf("failed to parse STATUS.md: missing required frontmatter key 'current_phase'")
+	}
+	if status.CurrentGate == "" {
+		return status, fmt.Errorf("failed to parse STATUS.md: missing required frontmatter key 'current_gate'")
+	}
+	if status.Status == "" {
+		return status, fmt.Errorf("failed to parse STATUS.md: missing required frontmatter key 'status'")
+	}
+	if _, ok := allowedStatusValues[status.Status]; !ok {
+		return status, fmt.Errorf("failed to parse STATUS.md: unsupported status '%s'", status.Status)
+	}
+
+	return status, nil
 }
 
-// countTasks tallies checkboxes representing PIOS task states
-func countTasks(filepath string) (pending, inProgress, completed int) {
-	data, err := os.ReadFile(filepath)
+func parseTasksContractVersion(content string) (string, error) {
+	frontmatterRaw, ok := extractFrontmatter(content)
+	if !ok {
+		return "", fmt.Errorf("missing YAML frontmatter in templates/tasks.md")
+	}
+
+	var fm TasksFrontmatter
+	if err := yaml.Unmarshal([]byte(frontmatterRaw), &fm); err != nil {
+		return "", fmt.Errorf("failed to parse tasks YAML frontmatter: %v", err)
+	}
+
+	version := strings.TrimSpace(fm.PiosContractVersion)
+	if version == "" {
+		return "", fmt.Errorf("missing required frontmatter key 'pios_contract_version' in templates/tasks.md")
+	}
+
+	return version, nil
+}
+
+// extractFrontmatter isolates the metadata block between top-of-file '---' lines.
+func extractFrontmatter(content string) (string, bool) {
+	lines := strings.Split(content, "\n")
+	if len(lines) == 0 {
+		return "", false
+	}
+
+	firstLine := strings.TrimPrefix(lines[0], "\uFEFF")
+	if strings.TrimSpace(firstLine) != "---" {
+		return "", false
+	}
+
+	var fm []string
+	for _, line := range lines[1:] {
+		if strings.TrimSpace(line) == "---" {
+			return strings.Join(fm, "\n"), true
+		}
+		fm = append(fm, line)
+	}
+
+	return "", false
+}
+
+// countTasks tallies checkboxes representing PIOS task states.
+func countTasks(path string) (pending, inProgress, completed int) {
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return // return 0,0,0 if missing
+		return
 	}
 	lines := strings.Split(string(data), "\n")
 	for _, line := range lines {

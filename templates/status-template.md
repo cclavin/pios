@@ -1,27 +1,27 @@
----
-pios_version: "0.2"
-current_phase: ""
-current_gate: ""
-status: ""
+﻿---
+pios_version: "0.4.0"
+current_phase: "v0.4.0 positioning reset"
+current_gate: "Positioning and Contract Hardening"
+status: "Not Started"
 ---
 # STATUS
 
 ## Current Phase
-- Phase:
+- Phase: v0.4.0 positioning reset
 
 ## Next 3 Actions
-1)
-2)
-3)
+1) Finalize positioning and scope docs
+2) Lock contract grammar and templates
+3) Harden validator and tests
 
 ## Blockers
-- B1:
+- None
 
 ## Open Questions
-- OQ1:
+- None
 
 ## Risks
-- R1:
+- Scope creep into runtime tooling
 
 ## Notes
-- Any short context needed to resume quickly.
+- Keep CLI gate checks deterministic and cross-platform.
