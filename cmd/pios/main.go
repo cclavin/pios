@@ -19,10 +19,10 @@ const tasksContractVersion = "0.4"
 const ideContextPrompt = "You are operating under the PIOS execution contract. Read AGENTS.md. You must validate your work against the phase gates. Update STATUS.md and check off items in TASKS.md. Run `pios validate` frequently to ensure you are passing the gates."
 
 const piosAscii = `
-    ____  ____  ____  _____
-   / __ \/  _// __ \/ ___/ 
-  / /_/ // / / / / /\__ \  
- / ____// / / /_/ /___/ /  
+    ____  ____ ____  ____
+   / __ \/  _//__  \/ ___/ 
+  / /_/ // // / / /\__ \  
+ / ____// // /_/ /___/ /  
 /_/   /___/\____//____/    
 `
 
