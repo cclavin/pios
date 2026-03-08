@@ -24,7 +24,10 @@
 - Interop exporters to transpile `profiles/` into Cursor/Continue/Windsurf `.rules` formats.
 - Integrations: hooks, commit templates
 
-## v1.0
-- Stable spec schema
-- Repeatable release process
-- Clear interop story
+## v1.0 (Upcoming)
+- **Model Context Protocol (MCP) Server Integration:** Native tool integration allowing AI agents (Claude Code, Cursor) to invoke `pios_validate()` via JSON-RPC, bypassing terminal bash execution.
+- **Native Distribution:** Availability via package managers (`brew install pios`, Winget) to remove the `go install` dependency for non-Go developers.
+- **VitePress/Nextra Documentation Site:** Comprehensive web documentation hosting guides, workflows, and adapter setups.
+- **Advanced Backtesting Suite:** Introduce multi-paradigm, non-HTML5 benchmark tests (e.g. Go CLI tools, fullstack React/Python web apps) to validate PIOS agent discipline on complex file structures.
+- **Stable Spec Schema:** Lock the `pios_contract_version` structure in YAML headers.
+- **Repeatable Release Process:** Fully automated semantic releases.
