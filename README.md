@@ -61,13 +61,27 @@ PIOS exists to convert AI assistance into **repeatable outcomes**.
 
 ---
 
-## Quick Start
+## Tutorials & Workflows
 
-PIOS can be used programmatically via the built-in CLI, or manually by simply copying the contract templates and feeding them to your AI.
+PIOS can be used in five distinct ways, depending on how deeply you want to integrate it into your AI developer environment. Choose the workflow that best fits your style.
 
-### The Automated Path (CLI)
+### 1. The Agent-Native Path (MCP Server) - *Highly Recommended*
 
-The native Golang CLI instantly injects templates and tracks your AI agent's progress via strict validation gates.
+This is the most powerful way to use PIOS. The CLI incorporates a fully native Model Context Protocol (MCP) server. Once connected, your AI agent reads the current tasks and validates its own phase gates over a background JSON-RPC connection—you never have to type `pios validate` in the terminal!
+
+**The Setup:**
+*   **For Claude Code:** Run `claude mcp add pios-mcp -- pios mcp`
+*   **For Cursor:** Open Settings > Features > MCP. Click **+ Add new MCP server**. Set Name to `pios`, Type to `command`, and Command to `pios mcp`.
+
+**The Daily Workflow:**
+1.  Run `pios init` in a new folder to drop the project templates.
+2.  Fill out your `templates/min-spec.md`.
+3.  Prompt your connected agent (e.g., *"Review my PIOS spec and begin compiling the plan-lock."*).
+4.  As the agent writes code, it will automatically call the `pios_validate` tool to check its own work before moving to the next milestone!
+
+### 2. The Command-Line Path (Human-in-the-loop)
+
+If you prefer to manually control the phase gates while the AI writes the code, the native Golang CLI instantly injects templates and tracks the repository state via strict terminal commands.
 
 **Install the CLI:**
 ```bash
@@ -76,53 +90,22 @@ go install github.com/cclavin/pios/cmd/pios@latest
 
 **Initialize a new project:**
 ```bash
-pios init
+pios init --ide=cursor
 ```
-This will eject the templates and `STATUS.md` into your current directory. Follow the phase gates:
+This drops the templates and scaffolds the IDE context rules inline. Your daily workflow simply consists of letting the AI build, and you manually typing `pios validate` to ensure the contract is met before checking off the milestone.
 
-1. Fill out **Minimum Spec**: Keep it short. Avoid premature details.
-2. Run **Spec Lock**: Resolve only the highest-impact unknowns.
-3. Generate **Plan Lock**: Architecture, data flow, constraints, risks, and test strategy.
-4. Convert plan → **TASKS.md**: Small tasks, each testable, each with acceptance criteria.
-5. **Autopilot Loop**: Point an AI Agent at the repository. The agent can use `pios validate` and `pios status` to autonomously burn down `TASKS.md`.
+### 3. The Zero-to-Hero Path (Fully Autonomous)
 
-### The Manual / Creative Path (No CLI)
-
-If you don't use Go or prefer a lighter touch, PIOS is still highly effective as purely text-based prompting architecture.
-
-1. **Copy the Templates:** Manually copy `STATUS.md` and the Markdown files in the `/templates/` directory into your project's root or a `/docs` folder.
-2. **Set the Contract:** Fill out the specs just as you would with the CLI.
-3. **Initialize the Agent:** Pass the completed `tasks.md` and `status-template.md` to Claude, ChatGPT, Cursor, or Windsurf. 
-4. **The System Prompt:** The easiest way to kick off the agent is to give it the following explicit directive: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`. When you finish a task, check it off `[x]` and update `STATUS.md` before writing more code."*
-5. **Human Validation:** Without the CLI, *you* are the phase gate validator! Review the agent's work and check its `STATUS.md` discipline before allowing it to proceed to the next milestone.
-
-### Connect the MCP Server (Agent Native Mode)
-
-The PIOS CLI incorporates a fully native Model Context Protocol (MCP) server. Once connected, your chosen AI agent can directly execute the validation tools as native JSON-RPC functions without needing to run sub-shell bash commands.
-
-**For Claude Code:**
-`claude mcp add pios-mcp -- pios mcp`
-
-**For Cursor:**
-1. Open Cursor Settings > Features > MCP.
-2. Click **+ Add new MCP server**.
-3. Name: `pios-mcp`
-4. Type: `command`
-5. Command: `pios mcp`
-
-Once connected, your AI instantly understands the `pios_validate`, `pios_status`, and `pios_init` tools!
-### The Fully Autonomous Path (Agent-Driven)
-
-If you have a powerful agent (like Claude Code or a strong Windsurf cascade) and don't want to touch the terminal at all, you can give your AI a single "Zero-to-Hero" prompt that commands it to install PIOS, initialize the context, and start building in one shot.
+If you have a powerful agent (like a strong Windsurf cascade) and don't want to touch the terminal at all, you can give your AI a single "Zero-to-Hero" prompt that commands it to install the CLI locally, initialize the context, and start building in one shot.
 
 **Example Prompt:**
-> "First, check if Go is installed on my system. If not, figure out the best way to install it silently for my OS. Once Go is installed, install the PIOS cli globally via `go install github.com/cclavin/pios/cmd/pios@latest`. 
+> "First, check if Go is installed on my system. If not, best-effort install it silently for my OS. Once Go is installed, install the PIOS cli globally via `go install github.com/cclavin/pios/cmd/pios@latest`. 
 > 
 > Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read the `AGENTS.md` file to understand the contract. Finally, proceed through the PIOS phases to build me a python script that scrapes hacker news."
 
-### The Clone & Run Path (CLI/IDE Native)
+### 4. The Clone & Run Path (CLI/IDE Native)
 
-If you prefer not to install the PIOS Go CLI globally, you can simply clone the repository and run your AI agent directly inside it. This is highly recommended for **Cursor**, **Windsurf**, or **Claude Code** users.
+If you just want the rule framework without installing Go or running a global binary on your machine, simply clone the repository into your new project folder. This gives your AI the `AGENTS.md` context without any system dependencies.
 
 ```bash
 # Clone the repository
@@ -133,7 +116,13 @@ cd my-new-project
 rm -rf .git
 ```
 
-Once cloned, open the folder in your AI IDE. The included `AGENTS.md` file acts as the project's brain, immediately instructing your agent on how to use the contract system.
+### 5. The Manual / Creative Path (Framework Agnostic)
+
+If you are just having a chat on the ChatGPT web interface, PIOS is still highly effective.
+1. manually copy `STATUS.md` and the Markdown files in the `/templates/` directory into your project's `/docs` folder.
+2. Fill out the specs.
+3. Pass the completed `tasks.md` to ChatGPT along with the strict prompt: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`."*
+4. Without the CLI, *you* are the manual phase gate validator! Ensure the AI respects the checklist.
 
 ---
 
