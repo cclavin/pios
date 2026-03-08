@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/fs"
 	"os"
@@ -14,6 +15,22 @@ import (
 )
 
 const tasksContractVersion = "0.4"
+
+const ideContextPrompt = "You are operating under the PIOS execution contract. Read AGENTS.md. You must validate your work against the phase gates. Update STATUS.md and check off items in TASKS.md. Run `pios validate` frequently to ensure you are passing the gates."
+
+const piosAscii = `
+    ____  _______  _____
+   / __ \/  _/ __ \/ ___/
+  / /_/ // // / / /\__ \ 
+ / ____// // /_/ /___/ / 
+/_/   /___/\____//____/  
+`
+
+const catAscii = `
+   |\__/,|   (` + "`" + `\
+ _.|o o  |_   ) )
+-(((---(((--------
+`
 
 var pendingTaskRe = regexp.MustCompile(`^(?i)\s*(?:###\s+|-\s+)\[\s\]`)
 var inProgressTaskRe = regexp.MustCompile(`^(?i)\s*(?:###\s+|-\s+)\[/\]`)
@@ -48,11 +65,13 @@ func main() {
 
 	switch command {
 	case "init":
-		cmdInit()
+		cmdInit(os.Args[2:])
 	case "status":
 		cmdStatus()
 	case "validate":
 		cmdValidate()
+	case "cat", "meow":
+		cmdCat()
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		printUsage()
@@ -66,11 +85,16 @@ func printUsage() {
 	fmt.Println("  pios <command>")
 	fmt.Println("\nCommands:")
 	fmt.Println("  init        Initialize PIOS templates in the current directory")
+	fmt.Println("              Flags: --ide=<cursor|windsurf|claude>")
 	fmt.Println("  status      Parse STATUS.md and output a JSON summary")
 	fmt.Println("  validate    Validate tasks contract and phase gate completion")
 }
 
-func cmdInit() {
+func cmdInit(args []string) {
+	initFs := flag.NewFlagSet("init", flag.ExitOnError)
+	ideFlag := initFs.String("ide", "", "IDE context to scaffold (cursor, windsurf, claude)")
+	_ = initFs.Parse(args)
+
 	fmt.Println("Initializing PIOS in the current directory...")
 
 	if err := os.MkdirAll("templates", 0755); err != nil {
@@ -108,7 +132,12 @@ func cmdInit() {
 		}
 	}
 
+	if *ideFlag != "" {
+		writeIDEContext(*ideFlag)
+	}
+
 	fmt.Println("PIOS templates successfully initialized.")
+	printBanner()
 }
 
 func cmdStatus() {
@@ -197,6 +226,45 @@ func cmdValidate() {
 	}
 
 	fmt.Println("Validation Passed: all task criteria are met.")
+	printBanner()
+	os.Exit(0)
+}
+
+func writeIDEContext(ide string) {
+	promptData := []byte(ideContextPrompt + "\n")
+	switch strings.ToLower(ide) {
+	case "cursor":
+		_ = os.WriteFile(".cursorrules", promptData, 0644)
+		fmt.Println("Generated .cursorrules")
+	case "windsurf":
+		_ = os.WriteFile(".windsurfrules", promptData, 0644)
+		fmt.Println("Generated .windsurfrules")
+	case "claude":
+		_ = os.WriteFile("CLAUDE.md", promptData, 0644)
+		fmt.Println("Generated CLAUDE.md")
+	default:
+		fmt.Printf("Unknown IDE flag value '%s'. Supported: cursor, windsurf, claude\n", ide)
+	}
+}
+
+func printBanner() {
+	// ANSI Color Codes
+	// Orange: \033[38;5;208m
+	// Green: \033[32m
+	// Reset: \033[0m
+	lines := strings.Split(strings.Trim(piosAscii, "\n"), "\n")
+	for i, line := range lines {
+		if i < len(lines)/2 {
+			fmt.Printf("\033[38;5;208m%s\033[0m\n", line)
+		} else {
+			fmt.Printf("\033[32m%s\033[0m\n", line)
+		}
+	}
+	fmt.Println()
+}
+
+func cmdCat() {
+	fmt.Println("\033[38;5;208m" + strings.Trim(catAscii, "\n") + "\033[0m")
 	os.Exit(0)
 }
 
