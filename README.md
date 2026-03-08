@@ -1,10 +1,13 @@
 # π PIOS — AI Project Execution Contract
 
-[![GitHub Release](https://img.shields.io/github/v/release/cclavin/pios)](https://github.com/cclavin/pios/releases)
-[![GitHub last commit](https://img.shields.io/github/last-commit/cclavin/pios)](https://github.com/cclavin/pios/commits/main)
-[![GitHub issues](https://img.shields.io/github/issues/cclavin/pios)](https://github.com/cclavin/pios/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/cclavin/pios)](https://github.com/cclavin/pios/pulls)
-[![Methodology](https://img.shields.io/badge/Methodology-PAI-blue)](https://github.com/danielmiessler/Personal_AI_Infrastructure)
+[![Version](https://img.shields.io/badge/version-0.4.0-orange)](https://github.com/cclavin/PIOS/releases)
+[![GitHub last commit](https://img.shields.io/github/last-commit/cclavin/PIOS)](https://github.com/cclavin/PIOS/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues/cclavin/PIOS)](https://github.com/cclavin/PIOS/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/cclavin/PIOS)](https://github.com/cclavin/PIOS/pulls)
+
+<p align="center">
+  <img src="pios-banner.gif" alt="PIOS — Contracts over vibes. Build useful things, faster." />
+</p>
 
 ## Table of Contents
 - [Mission](#mission)
@@ -135,20 +138,26 @@ Track the following metrics:
 - Finish rate (0 or 1)
 
 ### v0.4.0 Pre-Release Benchmarks
-To validate the PIOS execution contract model, the following three mini-projects were executed autonomously using the `pios` CLI strict phase gates. Each project went from a blank directory to validated completion in under 20 minutes with zero developer rework required.
 
-| Benchmark | Time ⏱️ | Clarification Turns | Context Resets | Finish Rate |
-| :--- | :---: | :---: | :---: | :---: |
-| **Dual-Game Menu Showcase** | 14m | 0 | 0 | 100% |
-| **Physics Destruction Sim** | 6m | 0 | 0 | 100% |
-| **Excuse Generator Widget** | 11m | 0 | 0 | 100% |
+To validate the PIOS execution contract model, the following three mini-projects were executed autonomously using the `pios` CLI strict phase gates. Each project went from a blank directory to validated completion in under 20 minutes.
+
+> **Environment:** Gemini 3.1 (high reasoning) · Antigravity IDE · `pios` autopilot loop
+
+| Benchmark | Time ⏱️ | Clarification Turns | Rework Events | Context Resets | Finish Rate | Artifacts |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Dual-Game Menu Showcase** | 15m | 0 | 0 | 0 | 100% | [view run](runs/game-menu/) |
+| **Physics Destruction Sim** | 5m | 0 | 0 | 0 | 100% | [view run](runs/destruction-sim/) |
+| **Excuse Generator Widget** | 10m | 0 | 0 | 0 | 100% | [view run](runs/excuse-widget/) |
+
+> **Scope note:** All three pre-release benchmarks are frontend/HTML5 projects — the fastest class for validating scaffolding speed and phase gate discipline. v1.0 benchmarks will include backend services, CLIs, and multi-file architectures.
 
 #### 1. Dual-Game Menu & Mechanics Showcase
 - **Prompt:** *"a game menu with two games built in and able to choose from where one the cat is just sleeping and it slightly reacts with user click or keyboard interaction. Another game in the menu that's brighter and more active, 2d platformer with slick ice physics and tuck down on keyboard (up down left right w a s d normal inputs) to build up speed on drop in altitude or downhill with test map of big hill and jump please, this must all be included in first run so do anything that's needed to test and complete"*
-- **Outcome:** A cohesive HTML5 Canvas experience housing a menu that links to a serene interactive cat toy and a high-speed momentum-based 2D platformer. Demonstrates the framework's ability to scaffold non-trivial logic matrices accurately.
+- **Outcome:** A cohesive HTML5 Canvas experience with a menu linking to a serene interactive cat toy and a high-speed momentum-based 2D platformer. Demonstrates the framework's ability to scaffold non-trivial logic accurately on the first run.
 
-#### 2. Physics Destruction Simulator
+#### 2. Physics Destruction Simulator *(unstructured input stress test)*
 - **Prompt:** *"Come up with a plan for a more interesting test, something more advanced and impressive to someone as a demo (maybe gif if it's a simple physics engine or something)... make the project manager decision and come at me with a ready to build plan for the mini project benchmark."*
+- **Note:** This benchmark was intentionally run with a loose, open-ended prompt to stress-test whether PIOS phase gates would still enforce a structured output even without a structured input. They did.
 - **Outcome:** A polished HTML5 Canvas & Matter.js implementation featuring a dark theme, neon glass blocks, and mouse interaction. Zero compilation required.
 
 #### 3. Embeddable Excuse Generator Widget
