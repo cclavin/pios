@@ -226,7 +226,6 @@ func cmdValidate() {
 	}
 
 	fmt.Println("Validation Passed: all task criteria are met.")
-	printBanner()
 	os.Exit(0)
 }
 
