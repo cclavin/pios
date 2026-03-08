@@ -1,7 +1,7 @@
 {
     "benchmark_name": "Robust Backend Constraint (Go + SQLite)",
     "pios_version": "v1.0.0-rc",
-    "agent_engine": "Claude 3.7 Sonnet (via Claude Code)",
+    "agent_engine": "Claude Sonnet 4.6 (via Claude Code)",
     "execution_time_minutes": 15,
     "human_clarification_turns": 0,
     "context_restarts": 0,
