@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIOS Excuse Widget Demo</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .demo-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .demo-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Excuse Generator Embed Demos</h1>
+        <p>This demonstrates the PIOS-generated CWV-friendly widget.</p>
+    </div>
+
+    <!-- The actual widget embedding example -->
+    <div class="demo-box">
+        <h2>Light Theme (Default)</h2>
+        <!-- 1. Place the container wherever you want the widget -->
+        <div id="pios-excuse-widget" data-button-text="Gimme an Excuse!"></div>
+    </div>
+
+    <!-- 2. Include the script via CDN or locally (async recommended for CWV) -->
+    <script src="widget.js" async></script>
+
+</body>
+
+</html>

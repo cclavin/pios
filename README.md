@@ -78,6 +78,19 @@ Track the following metrics:
 - Rework rate / context resets
 - Finish rate (0 or 1)
 
+### v0.4.0 Pre-Release Benchmarks
+To validate the PIOS execution contract model, the following three mini-projects were executed autonomously using the `pios` CLI strict phase gates. Each project went from a blank directory to validated completion in **under 20 minutes**.
+
+1. **Hello World Webpage**
+   - **Prompt:** *"Test CLI as needed and ensure 'runs' backtest folder could be used to have 'mini-projects' and backtests. Perhaps maybe with a simple hello world webpage or you can come up with an interesting project test but ensure git status up to date."*
+   - **Outcome:** A static HTML page proving the CLI deterministic validator catches uncompleted `[ ]` tasks in the `TASKS.md` contract.
+2. **Physics Destruction Simulator**
+   - **Prompt:** *"Come up with a plan for a more interesting test, something more advanced and impressive to someone as a demo (maybe gif if it's a simple physics engine or something)... make the project manager decision and come at me with a ready to build plan for the mini project benchmark."*
+   - **Outcome:** A polished HTML5 Canvas & Matter.js implementation featuring a dark theme, neon glass blocks, and mouse interaction. Zero compilation required.
+3. **Embeddable Excuse Generator Widget**
+   - **Prompt:** *"For the third and final pre-release test, random excuse generator for a button that loads a different excuse each time, designed as a widget that can be embedded and uploaded to common online stores for secure efficient CWV friendly embed on websites."*
+   - **Outcome:** A pristine Vanilla JS IIFE injecting scoped CSS and HTML, ensuring zero layout shifts (CWV-friendly) and a lightweight footprint.
+
 ---
 
 ## Roadmap
