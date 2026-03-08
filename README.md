@@ -1,11 +1,11 @@
-# π PIOS — AI Project Execution Contract
+# π PIOS - AI Project Execution Contract
 
 [![Version](https://img.shields.io/github/v/release/cclavin/PIOS?color=orange&label=version)](https://github.com/cclavin/PIOS/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cclavin/pios)](https://goreportcard.com/report/github.com/cclavin/PIOS)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
-  <img src="pios-banner.gif" alt="PIOS — Contracts over vibes. Build useful things, faster." />
+  <img src="pios-banner.gif" alt="PIOS - Contracts over vibes. Build useful things, faster." />
 </p>
 
 ## Table of Contents
@@ -21,7 +21,7 @@
 
 ## Mission
 
-PIOS is built on the belief that human attention is our most valuable resource. The current generation of AI tools often leads to endless chat sessions that waste time, compute, and energy without producing tangible results. PIOS exists to return **agency and focus** to developers. By enforcing deterministic boundaries and execution contracts, PIOS ensures that AI serves as a direct catalyst for human creativity rather than a conversational sinkhole—helping you build useful things, faster, and with less frustration.
+PIOS is built on the belief that human attention is our most valuable resource. The current generation of AI tools often leads to endless chat sessions that waste time, compute, and energy without producing tangible results. PIOS exists to return **agency and focus** to developers. By enforcing deterministic boundaries and execution contracts, PIOS ensures that AI serves as a direct catalyst for human creativity rather than a conversational sinkhole - helping you build useful things, faster, and with less frustration.
 
 ---
 
@@ -187,11 +187,11 @@ By combining a robust personal AI infrastructure (to define your developer ident
 
 ## Roadmap
 
-- [x] v0.1 — templates, agents, adapters, workflows, backtest harness
-- [x] v0.2 — machine-readable state
-- [x] v0.3 — Golang CLI: `pios init / validate / status`
-- [x] v0.4 — Contract Hardening & Positioning Reset
-- [ ] v1.0 — Stable Release Matrix: 
+- [x] v0.1 - templates, agents, adapters, workflows, backtest harness
+- [x] v0.2 - machine-readable state
+- [x] v0.3 - Golang CLI: `pios init / validate / status`
+- [x] v0.4 - Contract Hardening & Positioning Reset
+- [ ] v1.0 - Stable Release Matrix: 
   - Implementation of **Model Context Protocol (MCP)** server embedding. This will allow Claude Code and Cursor users to natively integrate PIOS phase validations as direct tools (e.g. `call pios_validate()`) without needing to invoke shell commands.
   - Native distribution via Homebrew (`brew install pios`) and Winget.
   - Comprehensive VitePress/Nextra documentation site.

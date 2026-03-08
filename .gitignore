@@ -1,6 +1,7 @@
 # Binaries
 pios.exe
 pios
+pios-*
 
 # Output
-runs/hello_world_metrics.json
+runs/*_metrics.json
