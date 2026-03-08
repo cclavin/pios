@@ -96,7 +96,7 @@ If you don't use Go or prefer a lighter touch, PIOS is still highly effective as
 4. **The System Prompt:** The easiest way to kick off the agent is to give it the following explicit directive: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`. When you finish a task, check it off `[x]` and update `STATUS.md` before writing more code."*
 5. **Human Validation:** Without the CLI, *you* are the phase gate validator! Review the agent's work and check its `STATUS.md` discipline before allowing it to proceed to the next milestone.
 
-> **Coming Soon via MCP:** In upcoming releases, initializing the PIOS prompt and validation gates will be fully automated via a Model Context Protocol (MCP) server, completely removing the need to manually copy/paste templates or system prompts.
+> **Coming Soon (v1.0 MCP):** In upcoming releases, the PIOS Go CLI will expose a native Model Context Protocol (MCP) server, allowing AI agents to invoke the validation tools natively via JSON-RPC instead of spawning sub-shells.
 
 ### The Fully Autonomous Path (Agent-Driven)
 
@@ -196,8 +196,7 @@ By combining a robust personal AI infrastructure (to define your developer ident
 - [x] v0.1 - templates, agents, adapters, workflows, backtest harness
 - [x] v0.2 - machine-readable state
 - [x] v0.3 - Golang CLI: `pios init / validate / status`
-- [x] v0.4 - Contract Hardening & Positioning Reset
-- [ ] v1.0 - Stable Release Matrix: 
-  - Implementation of **Model Context Protocol (MCP)** server embedding. This will allow Claude Code and Cursor users to natively integrate PIOS phase validations as direct tools (e.g. `call pios_validate()`) without needing to invoke shell commands.
-  - Native distribution via Homebrew (`brew install pios`) and Winget.
-  - Comprehensive VitePress/Nextra documentation site.
+- [x] v0.4 - Contract Hardening & Backtesting
+- [x] v0.5 - Universal Context Scaffolding (`--ide`) & ASCII Easter Eggs
+- [x] v0.6 - Goreleaser Native Distribution & VitePress Documentation Site
+- [ ] v1.0 - Model Context Protocol (MCP) Server Integration & Stable Release Matrix

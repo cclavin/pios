@@ -41,3 +41,15 @@ pios_contract_version: "0.4"
 ## Milestone 3 - Hardening
 
 (define tasks)
+
+---
+
+## Milestone 4 - Documentation & Handoff
+
+### [ ] TASK-999: Create Project README
+- **Status:** Open
+- **Dependencies:** None
+- **Acceptance Criteria:**
+  - [ ] `README.md` is created in the project root
+  - [ ] Explains project purpose and architecture
+  - [ ] Includes local setup, testing, and deployment instructions

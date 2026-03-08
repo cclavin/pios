@@ -30,3 +30,4 @@ A change is “done” when:
 - It is captured in the relevant artifact (template/workflow/doc)
 - It has clear acceptance criteria where appropriate
 - It doesn’t introduce conflicting guidance across tools
+- **Documentation:** A well-structured `README.md` is generated at the end of the project outlining the project purpose, architecture, and deployment instructions.
