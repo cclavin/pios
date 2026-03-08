@@ -2,7 +2,7 @@
 
 ![Version](https://img.shields.io/badge/version-0.4.0-orange) ![License](https://img.shields.io/badge/license-MIT-orange)
 
-PIOS is a structured, tool-agnostic [execution contract](docs/positioning.md) for **starting and finishing** AI-assisted software projects. It is [strictly scoped](docs/scope.md) as a contract layer, **not a runtime orchestration platform**.
+PIOS is a structured, tool-agnostic [execution contract](docs/positioning.md) for **starting and finishing** AI-assisted software projects. It is [strictly scoped](docs/scope.md) as a contract layer, **not a runtime orchestration platform**. It's designed to eliminate:
 - endless back-and-forth prompting
 - context drift / "context rot"
 - vague planning that never turns into a repo
@@ -26,7 +26,7 @@ PIOS exists to convert AI assistance into **repeatable outcomes**.
 
 1. **Contracts over vibes:** Start with structured inputs (specs) that can be refined without restarting.
 2. **Artifacts over chat:** Produce files, diffs, commands, and checklists.
-3. **Phase gates:** Each phase ends only when exit criteria is met.
+3. **Phase gates:** Each phase ends only when exit criteria are met.
 4. **Tool-agnostic by default:** Build a source of truth and export to tool-specific formats.
 5. **Completion-first:** PIOS optimizes for finishing, not perfect planning.
 6. **Autopilot loops:** Default workflow is implement → test → fix → document → summarize.
@@ -85,5 +85,5 @@ Track the following metrics:
 - [x] v0.1 — templates, agents, adapters, workflows, backtest harness
 - [x] v0.2 — machine-readable state
 - [x] v0.3 — Golang CLI: `pios init / validate / status`
-- [ ] v0.4 — Contract Hardening & Positioning Reset
+- [x] v0.4 — Contract Hardening & Positioning Reset
 - [ ] v1.0 — stable “execution contract” release
