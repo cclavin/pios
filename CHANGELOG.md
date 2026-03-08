@@ -5,8 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased / v0.6.0]
+### Planned
+- Goreleaser configuration for native distribution (Winget, Homebrew).
+- VitePress/Nextra documentation scaffold.
+
+## [v0.5.0] - 2026-03-08
 ### Added
+- `--ide` context scaffolding logic to `pios init` (supports `cursor`, `windsurf`, `claude`).
+- Secret ASCII easter eggs (PIOS color-gradient banner and cat command).
+
+## [v0.4.0] - 2026-03-08
+### Added
+- Completed formal v1.0 backtesting (Go Backend and React/NextJS Frontend).
+- Archived pre-release HTML5 benchmarks.
+- Overhauled README with hard metrics, badges, and automated Zero-to-Hero onboarding prompts.
 - Created positioning documents defining PIOS as an execution contract (`docs/positioning.md`, `docs/scope.md`).
 - Locked contract grammar definitions (`docs/contracts.md`).
 

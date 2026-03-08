@@ -163,6 +163,7 @@ To validate the PIOS execution contract model outside of simple HTML environment
 #### 1. Robust Backend Constraint (Go 1.22 + SQLite)
 - **Prompt:** A strict, highly constrained prompt demanding a Go 1.22 `net/http` REST API with persistent SQLite bindings via `modernc.org/sqlite` (no CGO), covered entirely by tests and packaged in a multi-stage `Dockerfile`.
 - **Outcome:** Flawless semantic execution. The PIOS contract prevented the agent from defaulting to popular but prohibited frameworks (like Gin or GORM). It correctly scoped the architecture, resolved internal state bugs via test suites, and pushed a production-grade multi-stage container. **10/10 passing tests. 0 human interventions.**
+- **Anomaly Report (The Power of Precision):** The agent generated dockerfiles, tests, and source code perfectly, but *failed* to write a `README.md` for the generated project. Why? Because the prompt did not explicitly ask for one, and `AGENTS.md` does not strictly mandate one to pass Phase 4. Rather than a downside, this is the core value proposition of PIOS: **It prevents LLM hallucinations.** The agent builds *exactly* what is in the spec-lock, maintaining total discipline. Nothing more, nothing less. If you want a README, you spec a README.
 
 #### 2. User-Like Frontend (React + Next.js App Router)
 - **Prompt:** A loose, generalized prompt simply asking for a "nice looking dashboard... React, Next.js, Tailwind, dark mode, glassmorphism."
