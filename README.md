@@ -1,13 +1,25 @@
 # π PIOS — AI Project Execution Contract
 
-![Version](https://img.shields.io/badge/version-0.4.0-orange) ![License](https://img.shields.io/badge/license-MIT-orange)
-***`ai-agents` • `developer-tools` • `project-management` • `cli-tool` • `automation` • `llm-workflow`***
+[![GitHub Release](https://img.shields.io/github/v/release/cclavin/pios)](https://github.com/cclavin/pios/releases)
+[![GitHub last commit](https://img.shields.io/github/last-commit/cclavin/pios)](https://github.com/cclavin/pios/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues/cclavin/pios)](https://github.com/cclavin/pios/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/cclavin/pios)](https://github.com/cclavin/pios/pulls)
+[![Methodology](https://img.shields.io/badge/Methodology-PAI-blue)](https://github.com/danielmiessler/Personal_AI_Infrastructure)
 
-PIOS is a structured, tool-agnostic [execution contract](docs/positioning.md) for **starting and finishing** AI-assisted software projects. It is [strictly scoped](docs/scope.md) as a contract layer, **not a runtime orchestration platform**. It's designed to eliminate:
-- endless back-and-forth prompting
-- context drift / "context rot"
-- vague planning that never turns into a repo
-- stalled projects with no clear "done" state
+## Table of Contents
+- [Mission](#mission)
+- [Core Positioning](#core-positioning)
+- [Repository Layout](#repository-layout)
+- [Quick Start](#quick-start)
+- [Example Prompts](#example-prompts)
+- [Backtesting PIOS](#backtesting-pios)
+- [Continuing the Loop](#continuing-the-loop-post-completion)
+- [Related Ecosystems](#related-ecosystems--methodologies)
+- [Roadmap](#roadmap)
+
+## Mission
+
+PIOS is built on the belief that human attention is our most valuable resource. The current generation of AI tools often leads to endless chat sessions that waste time, compute, and energy without producing tangible results. PIOS exists to return **agency and focus** to developers. By enforcing deterministic boundaries and execution contracts, PIOS ensures that AI serves as a direct catalyst for human creativity rather than a conversational sinkhole—helping you build useful things, faster, and with less frustration.
 
 ---
 
@@ -81,6 +93,33 @@ If you don't use Go or prefer a lighter touch, PIOS is still highly effective as
 3. **Initialize the Agent:** Pass the completed `tasks.md` and `status-template.md` to Claude, ChatGPT, Cursor, or Windsurf. 
 4. **The System Prompt:** Instruct your AI: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`. When you finish a task, check it off `[x]` and update `STATUS.md` before writing more code."*
 5. **Human Validation:** Without the CLI, *you* are the phase gate validator! Review the agent's work and check its `STATUS.md` discipline before allowing it to proceed to the next milestone.
+
+### The Clone & Run Path (CLI/IDE Native)
+
+If you prefer not to install the PIOS Go CLI globally, you can simply clone the repository and run your AI agent directly inside it. This is highly recommended for **Cursor**, **Windsurf**, or **Claude Code** users.
+
+```bash
+# Clone the repository
+git clone https://github.com/cclavin/pios.git my-new-project
+cd my-new-project
+
+# Remove the .git folder to start fresh
+rm -rf .git
+```
+
+Once cloned, open the folder in your AI IDE. The included `AGENTS.md` file acts as the project's brain, immediately instructing your agent on how to use the contract system.
+
+---
+
+## Example Prompts
+
+A good PIOS prompt focuses on the *what* and the *constraints*, leaving the *how* to the AI within the contract framework.
+
+**Good Prompt (Concise & Constrained):**
+> "Initialize a new project using the PIOS templates. Create a vanilla JS widget that fetches the current weather for a user's location. It must be a single file, styled with inline CSS, and handle permissions gracefully."
+
+**Good Prompt (Next Milestone Update):**
+> "We've completed Milestone 1. Please update the `plan-lock.md` to include an auth layer using Supabase, then wipe the current `TASKS.md` and generate Milestone 2 tasks for the login and registration flows."
 
 ---
 
