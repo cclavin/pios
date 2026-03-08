@@ -1,10 +1,8 @@
-# π PIOS — Project Intelligence Operating System
+# π PIOS — AI Project Execution Contract
 
-![Version](https://img.shields.io/badge/version-0.3.0-orange) ![License](https://img.shields.io/badge/license-MIT-orange)
+![Version](https://img.shields.io/badge/version-0.4.0-orange) ![License](https://img.shields.io/badge/license-MIT-orange)
 
-PIOS is a structured, tool-agnostic framework for **starting and finishing** AI-assisted software projects.
-
-It’s designed for builders who use AI tools (Claude, GPT, Codex, Cursor, Continue, Windsurf, OpenClaw, etc.) and want to reduce:
+PIOS is a structured, tool-agnostic [execution contract](docs/positioning.md) for **starting and finishing** AI-assisted software projects. It is [strictly scoped](docs/scope.md) as a contract layer, **not a runtime orchestration platform**.
 - endless back-and-forth prompting
 - context drift / "context rot"
 - vague planning that never turns into a repo
@@ -17,7 +15,7 @@ It’s designed for builders who use AI tools (Claude, GPT, Codex, Cursor, Conti
 PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable workflows — not just chat.
 
 - **Completion-first:** PIOS operates on **phase gates** with explicit exit criteria (Minimum Spec → Spec Lock → Plan Lock → Task Lock → Scaffold Done) and an **autopilot loop** (implement → test → fix → document → summarize).
-- **Interop-first:** PIOS is not a competing "rules format." It is a source-of-truth export target. Maintain core guidance in PIOS and export to `AGENTS.md` (tool-agnostic baseline) and tool-specific adapters. This keeps your repo consistent even as tools change.
+- **Contract-first:** PIOS is not a competing "rules format." It establishes a source-of-truth contract. Maintain core guidance in PIOS via `AGENTS.md` (tool-agnostic baseline) and tool-specific adapters. This keeps your repo consistent even as tools change.
 - **Artifact-first:** Focuses strictly on files, diffs, commands, and checklists. Minimal prose.
 
 ---
@@ -86,6 +84,6 @@ Track the following metrics:
 
 - [x] v0.1 — templates, agents, adapters, workflows, backtest harness
 - [x] v0.2 — machine-readable state
-- [x] v0.3 — Golang CLI: `pios init / validate / export`
-- [ ] v0.4 — interop exporters for Cursor / Continue / Windsurf formats
-- [ ] v1.0 — stable “project OS” release
+- [x] v0.3 — Golang CLI: `pios init / validate / status`
+- [ ] v0.4 — Contract Hardening & Positioning Reset
+- [ ] v1.0 — stable “execution contract” release

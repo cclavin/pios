@@ -17,6 +17,10 @@
 - Embed `templates/` natively into the `go` binary
 
 ## v0.4
+- Contract Hardening & Positioning Reset
+- Formalize phase gates and contract definitions
+
+## Deferred / Later
 - Interop exporters to transpile `profiles/` into Cursor/Continue/Windsurf `.rules` formats.
 - Integrations: hooks, commit templates
 

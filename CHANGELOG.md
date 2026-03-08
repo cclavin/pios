@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Created positioning documents defining PIOS as an execution contract (`docs/positioning.md`, `docs/scope.md`).
+- Locked contract grammar definitions (`docs/contracts.md`).
+
+### Changed
+- Hardened CLI validator matching logic in `cmd/pios/main.go`.
+- Relocated exporters from v0.4 Roadmap to Deferred.
+- Updated tool adapters and workflows to remove runtime orchestration framing.
+
 ## [v0.3.1] - 2026-03-05
 ### Fixed
 - Fixed directory traversal logic in `pios status` and `pios validate` by implementing `findProjectRoot()`.

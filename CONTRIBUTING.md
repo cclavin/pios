@@ -4,7 +4,7 @@ Welcome! PIOS is an open-source framework designed to ensure AI-assisted softwar
 
 ## The Golden Rule (Artifact-First)
 Before submitting a Pull Request, ensure your changes align with the core philosophy of PIOS: **completion-first, artifact-first**. 
-We do not accept PRs that introduce philosophical bloat, lengthy prose, or highly opinionated "prompt engineering" masquerading as system rules.
+We strictly enforce our [scope boundaries](docs/scope.md) as a contract layer. We do not accept PRs that introduce runtime features, model orchestration, or new tool exporters (as per v0.4 scope).
 
 ## Contributing to Profiles & Adapters
 

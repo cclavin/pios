@@ -3,7 +3,7 @@
 This repository uses PIOS conventions.
 
 ## Repo Intent
-PIOS is a tool-agnostic, completion-first framework for AI-assisted software development.
+PIOS is a tool-agnostic, completion-first execution contract layer for AI-assisted software development.
 
 ## High-Level Rules
 - Prefer artifact-first outputs: files, diffs, commands, checklists.

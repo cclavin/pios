@@ -1,6 +1,6 @@
 # PIOS Operating Guide
 
-This document captures the sequential flows to progress a project from an empty folder to a finished MVP using the PIOS framework.
+This document captures the sequential flows to progress a project from an empty folder to a finished MVP using the PIOS [execution contract](../docs/positioning.md).
 
 ---
 

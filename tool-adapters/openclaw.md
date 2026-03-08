@@ -1,5 +1,7 @@
 # OpenClaw Adapter (PIOS)
 
+> **Note:** PIOS is an execution contract layer, not a runtime platform. Follow these strict validations explicitly.
+
 Best for:
 - Autonomous background execution
 - Terminal-driven coding workflows
