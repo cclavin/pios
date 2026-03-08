@@ -48,7 +48,12 @@ PIOS exists to convert AI assistance into **repeatable outcomes**.
 ---
 
 ## Quick Start
-PIOS comes with a native CLI to instantly copy the templates into your new repository and programmatically track your AI agent's progress.
+
+PIOS can be used programmatically via our built-in CLI, or manually by simply copying the contract templates and feeding them to your AI.
+
+### The Automated Path (CLI)
+
+The native Golang CLI instantly injects templates and tracks your AI agent's progress via strict validation gates.
 
 **Install the CLI:**
 ```bash
@@ -66,6 +71,16 @@ This will eject the templates and `STATUS.md` into your current directory. Follo
 3. Generate **Plan Lock**: Architecture, data flow, constraints, risks, and test strategy.
 4. Convert plan → **TASKS.md**: Small tasks, each testable, each with acceptance criteria.
 5. **Autopilot Loop**: Point an AI Agent at the repository. The agent can use `pios validate` and `pios status` to autonomously burn down `TASKS.md`.
+
+### The Manual / Creative Path (No CLI)
+
+If you don't use Go or prefer a lighter touch, PIOS is still highly effective as purely text-based prompting architecture.
+
+1. **Copy the Templates:** Manually copy `STATUS.md` and the Markdown files in the `/templates/` directory into your project's root or a `/docs` folder.
+2. **Set the Contract:** Fill out the specs just as you would with the CLI.
+3. **Initialize the Agent:** Pass the completed `tasks.md` and `status-template.md` to Claude, ChatGPT, Cursor, or Windsurf. 
+4. **The System Prompt:** Instruct your AI: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`. When you finish a task, check it off `[x]` and update `STATUS.md` before writing more code."*
+5. **Human Validation:** Without the CLI, *you* are the phase gate validator! Review the agent's work and check its `STATUS.md` discipline before allowing it to proceed to the next milestone.
 
 ---
 
@@ -95,6 +110,14 @@ To validate the PIOS execution contract model, the following three mini-projects
    - **Prompt:** *"For the third and final pre-release test, random excuse generator for a button that loads a different excuse each time, designed as a widget that can be embedded and uploaded to common online stores for secure efficient CWV friendly embed on websites."*
    - **Outcome:** A pristine Vanilla JS IIFE injecting scoped CSS and HTML, ensuring zero layout shifts (CWV-friendly) and a lightweight footprint.
    - **Metrics:** ⏱️ 10m to scaffold | 💬 0 clarification turns | 🔄 0 context resets | ✅ 100% Deterministic Finish Rate
+
+---
+
+## Related Ecosystems & Methodologies
+
+PIOS pairs exceptionally well with system-level instruction formatting. For users looking to standardize their global AI behavior, tools, and customized context, we highly recommend exploring [Daniel Miessler's Personal AI Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure). 
+
+By combining a robust personal AI infrastructure (to define your developer identity and global rules) with PIOS (to enforce project-specific execution and finishing), you create a highly deterministic, end-to-end AI development capability.
 
 ---
 
