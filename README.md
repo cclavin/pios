@@ -98,6 +98,15 @@ If you don't use Go or prefer a lighter touch, PIOS is still highly effective as
 
 > **Coming Soon via MCP:** In upcoming releases, initializing the PIOS prompt and validation gates will be fully automated via a Model Context Protocol (MCP) server, completely removing the need to manually copy/paste templates or system prompts.
 
+### The Fully Autonomous Path (Agent-Driven)
+
+If you have a powerful agent (like Claude Code or a strong Windsurf cascade) and don't want to touch the terminal at all, you can give your AI a single "Zero-to-Hero" prompt that commands it to install PIOS, initialize the context, and start building in one shot.
+
+**Example Prompt:**
+> "First, check if Go is installed on my system. If not, figure out the best way to install it silently for my OS. Once Go is installed, install the PIOS cli globally via `go install github.com/cclavin/pios/cmd/pios@latest`. 
+> 
+> Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read the `AGENTS.md` file to understand the contract. Finally, proceed through the PIOS phases to build me a python script that scrapes hacker news."
+
 ### The Clone & Run Path (CLI/IDE Native)
 
 If you prefer not to install the PIOS Go CLI globally, you can simply clone the repository and run your AI agent directly inside it. This is highly recommended for **Cursor**, **Windsurf**, or **Claude Code** users.
@@ -154,6 +163,7 @@ To validate the PIOS execution contract model outside of simple HTML environment
 #### 1. Robust Backend Constraint (Go 1.22 + SQLite)
 - **Prompt:** A strict, highly constrained prompt demanding a Go 1.22 `net/http` REST API with persistent SQLite bindings via `modernc.org/sqlite` (no CGO), covered entirely by tests and packaged in a multi-stage `Dockerfile`.
 - **Outcome:** Flawless semantic execution. The PIOS contract prevented the agent from defaulting to popular but prohibited frameworks (like Gin or GORM). It correctly scoped the architecture, resolved internal state bugs via test suites, and pushed a production-grade multi-stage container. **10/10 passing tests. 0 human interventions.**
+- **Anomaly Report (The Power of Precision):** The agent generated dockerfiles, tests, and source code perfectly, but *failed* to write a `README.md` for the generated project. Why? Because the prompt did not explicitly ask for one, and `AGENTS.md` does not strictly mandate one to pass Phase 4. Rather than a downside, this is the core value proposition of PIOS: **It prevents LLM hallucinations.** The agent builds *exactly* what is in the spec-lock, maintaining total discipline. Nothing more, nothing less. If you want a README, you spec a README.
 
 #### 2. User-Like Frontend (React + Next.js App Router)
 - **Prompt:** A loose, generalized prompt simply asking for a "nice looking dashboard... React, Next.js, Tailwind, dark mode, glassmorphism."
