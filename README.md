@@ -98,6 +98,15 @@ If you don't use Go or prefer a lighter touch, PIOS is still highly effective as
 
 > **Coming Soon via MCP:** In upcoming releases, initializing the PIOS prompt and validation gates will be fully automated via a Model Context Protocol (MCP) server, completely removing the need to manually copy/paste templates or system prompts.
 
+### The Fully Autonomous Path (Agent-Driven)
+
+If you have a powerful agent (like Claude Code or a strong Windsurf cascade) and don't want to touch the terminal at all, you can give your AI a single "Zero-to-Hero" prompt that commands it to install PIOS, initialize the context, and start building in one shot.
+
+**Example Prompt:**
+> "First, check if Go is installed on my system. If not, figure out the best way to install it silently for my OS. Once Go is installed, install the PIOS cli globally via `go install github.com/cclavin/pios/cmd/pios@latest`. 
+> 
+> Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read the `AGENTS.md` file to understand the contract. Finally, proceed through the PIOS phases to build me a python script that scrapes hacker news."
+
 ### The Clone & Run Path (CLI/IDE Native)
 
 If you prefer not to install the PIOS Go CLI globally, you can simply clone the repository and run your AI agent directly inside it. This is highly recommended for **Cursor**, **Windsurf**, or **Claude Code** users.
