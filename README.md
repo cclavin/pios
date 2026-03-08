@@ -81,9 +81,9 @@ Track the following metrics:
 ### v0.4.0 Pre-Release Benchmarks
 To validate the PIOS execution contract model, the following three mini-projects were executed autonomously using the `pios` CLI strict phase gates. Each project went from a blank directory to validated completion in **under 20 minutes**.
 
-1. **Hello World Webpage**
-   - **Prompt:** *"Test CLI as needed and ensure 'runs' backtest folder could be used to have 'mini-projects' and backtests. Perhaps maybe with a simple hello world webpage or you can come up with an interesting project test but ensure git status up to date."*
-   - **Outcome:** A static HTML page proving the CLI deterministic validator catches uncompleted `[ ]` tasks in the `TASKS.md` contract.
+1. **Dual-Game Menu & Mechanics Showcase**
+   - **Prompt:** *"a game menu with two games built in and able to choose from where one the cat is just sleeping and it slightly reacts with user click or keyboard interaction. Another game in the menu that's brighter and more active, 2d platformer with slick ice physics and tuck down on keyboard (up down left right w a s d normal inputs) to build up speed on drop in altitude or downhill with test map of big hill and jump please, this must all be included in first run so do anything that's needed to test and complete"*
+   - **Outcome:** A cohesive HTML5 Canvas experience housing a menu that links to a serene interactive cat toy and a high-speed momentum-based 2D platformer. Demonstrates the framework's ability to scaffold non-trivial logic matrices accurately.
 2. **Physics Destruction Simulator**
    - **Prompt:** *"Come up with a plan for a more interesting test, something more advanced and impressive to someone as a demo (maybe gif if it's a simple physics engine or something)... make the project manager decision and come at me with a ready to build plan for the mini project benchmark."*
    - **Outcome:** A polished HTML5 Canvas & Matter.js implementation featuring a dark theme, neon glass blocks, and mouse interaction. Zero compilation required.

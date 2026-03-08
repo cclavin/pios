@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIOS Dual-Game Menu Benchmark</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a2e;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+
+        #gameCanvas {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        #menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn {
+            background-color: #e94560;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            width: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background-color: #ff5b77;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: none;
+            z-index: 20;
+        }
+
+        .back-btn {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Helpers for rendering context */
+        #ui-text {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            display: none;
+            z-index: 20;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Main Menu DOM -->
+    <div id="menu">
+        <h1>PIOS Arcade</h1>
+        <button class="btn" onclick="startGame('cat')">Game 1: Sleeping Cat Toy</button>
+        <button class="btn" onclick="startGame('ice')">Game 2: Ice Platformer Physics</button>
+    </div>
+
+    <!-- UI Overlay during game -->
+    <div id="overlay">
+        <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+    </div>
+    <div id="ui-text"></div>
+
+    <!-- The Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        // --- GLOBAL SETUP ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const menuDOM = document.getElementById('menu');
+        const overlayDOM = document.getElementById('overlay');
+        const uiText = document.getElementById('ui-text');
+
+        let currentState = 'menu'; // 'menu', 'cat', 'ice'
+        let animationFrameId;
+
+        // Resize handler
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Input Tracking
+        const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+        const mouse = { x: 0, y: 0, clicked: false, clickEvent: null };
+
+        window.addEventListener('keydown', e => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+            catGame.handleInput(); // Let cat react to keys
+        });
+        window.addEventListener('keyup', e => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+        });
+
+        canvas.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        canvas.addEventListener('mousedown', e => {
+            mouse.clicked = true;
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            catGame.handleInput();
+        });
+        canvas.addEventListener('mouseup', e => { mouse.clicked = false; });
+
+        // --- NAVIGATION ---
+        function startGame(state) {
+            currentState = state;
+            menuDOM.style.display = 'none';
+            canvas.style.display = 'block';
+            overlayDOM.style.display = 'block';
+            uiText.style.display = 'block';
+
+            if (state === 'cat') {
+                uiText.innerText = "Click nearby or press keys to interact with the sleeping cat.";
+                catGame.init();
+            } else if (state === 'ice') {
+                uiText.innerText = "A/D or Left/Right to slide. W/Up to jump. Hold S/Down on slopes to tuck & build massive speed!";
+                iceGame.init();
+            }
+
+            cancelAnimationFrame(animationFrameId);
+            gameLoop();
+        }
+
+        function showMenu() {
+            currentState = 'menu';
+            menuDOM.style.display = 'flex';
+            canvas.style.display = 'none';
+            overlayDOM.style.display = 'none';
+            uiText.style.display = 'none';
+            cancelAnimationFrame(animationFrameId);
+        }
+
+        // --- GAME 1: SLEEPING CAT TOY ---
+        const catGame = {
+            sleepTimer: 0,
+            awakeTimer: 0,
+            eyeState: 'closed', // 'closed', 'open', 'squint'
+            earRotation: 0,
+            init() {
+                this.eyeState = 'closed';
+                this.awakeTimer = 0;
+            },
+            handleInput() {
+                if (currentState !== 'cat') return;
+                // Wake up the cat slightly
+                this.awakeTimer = 60; // Stay awake for 60 frames
+                this.eyeState = 'open';
+            },
+            update() {
+                this.sleepTimer++;
+
+                // Logic to return to sleep
+                if (this.awakeTimer > 0) {
+                    this.awakeTimer--;
+                    if (this.awakeTimer < 15) this.eyeState = 'squint';
+                } else {
+                    this.eyeState = 'closed';
+                }
+
+                // Slight ear twitch depending on mouse movement near center
+                let dist = Math.hypot(mouse.x - canvas.width / 2, mouse.y - canvas.height / 2);
+                if (dist < 300 && this.awakeTimer > 0) {
+                    this.earRotation = (mouse.x - canvas.width / 2) * 0.05;
+                } else {
+                    this.earRotation = Math.sin(this.sleepTimer * 0.02) * 5; // gentle breathing twitch
+                }
+            },
+            draw() {
+                // Background
+                ctx.fillStyle = '#2b2b36';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+
+                // Breathing animation
+                let breath = Math.sin(this.sleepTimer * 0.05) * 5;
+
+                // Body (Curled up)
+                ctx.fillStyle = '#ffb05c'; // Orange tabby
+                ctx.beginPath();
+                ctx.ellipse(0, 20 + breath, 100, 70 + breath / 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Tail curled around
+                ctx.beginPath();
+                ctx.lineWidth = 20;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#e29541';
+                ctx.arc(0, 40 + breath, 90, Math.PI * 0.2, Math.PI * 1.2, false);
+                ctx.stroke();
+
+                // Head
+                ctx.fillStyle = '#ffb05c';
+                ctx.beginPath();
+                ctx.ellipse(-50, -20 + breath, 45, 40, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Ears
+                ctx.save();
+                ctx.translate(-70, -45 + breath);
+                ctx.rotate(this.earRotation * Math.PI / 180);
+                ctx.beginPath(); ctx.moveTo(-15, 10); ctx.lineTo(0, -30); ctx.lineTo(15, 10); ctx.fill();
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(-30, -45 + breath);
+                ctx.rotate(-this.earRotation * Math.PI / 180);
+                ctx.beginPath(); ctx.moveTo(-15, 10); ctx.lineTo(0, -30); ctx.lineTo(15, 10); ctx.fill();
+                ctx.restore();
+
+                // Eyes
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 3;
+                if (this.eyeState === 'closed') {
+                    ctx.beginPath(); ctx.arc(-65, -20 + breath, 8, 0, Math.PI); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(-35, -20 + breath, 8, 0, Math.PI); ctx.stroke();
+                } else if (this.eyeState === 'squint') {
+                    ctx.beginPath(); ctx.moveTo(-73, -20 + breath); ctx.lineTo(-57, -20 + breath); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(-43, -20 + breath); ctx.lineTo(-27, -20 + breath); ctx.stroke();
+                } else {
+                    // Open eyes
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath(); ctx.arc(-65, -20 + breath, 10, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(-35, -20 + breath, 10, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#333';
+
+                    // Look towards mouse
+                    let lookX = (mouse.x - canvas.width / 2 + 50) * 0.01;
+                    let lookY = (mouse.y - canvas.height / 2 + 20) * 0.01;
+                    lookX = Math.max(-5, Math.min(5, lookX));
+                    lookY = Math.max(-5, Math.min(5, lookY));
+
+                    ctx.beginPath(); ctx.arc(-65 + lookX, -20 + breath + lookY, 4, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(-35 + lookX, -20 + breath + lookY, 4, 0, Math.PI * 2); ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        };
+
+        // --- GAME 2: ICE PLATFORMER PHYSICS ---
+        const iceGame = {
+            player: { x: 100, y: 100, width: 30, height: 30, vx: 0, vy: 0 },
+            gravity: 0.5,
+            friction: 0.98, // Very slippery ice
+            tuckFriction: 0.995, // Even less friction when tucked
+            airFriction: 0.99,
+            camera: { x: 0, y: 0 },
+            platforms: [],
+            init() {
+                this.player = { x: 100, y: 100, width: 30, height: 30, vx: 0, vy: 0 };
+                // Build a level with a huge slope and a big jump
+                this.platforms = [
+                    { x: 0, y: 500, w: 600, h: 50, type: 'flat' }, // Starting area
+                    { x: 600, y: 500, w: 1000, h: 50, type: 'slope_down', drop: 800 }, // Huge slope
+                    { x: 1600, y: 1300, w: 800, h: 50, type: 'flat' }, // Valley
+                    { x: 2400, y: 1300, w: 300, h: 50, type: 'ramp_up', rise: -300 }, // Big Jump Ramp
+                    { x: 3000, y: 1200, w: 2000, h: 50, type: 'flat' }, // Landing zone
+                ];
+            },
+            update() {
+                // Input logic
+                let isTucking = keys.s || keys.ArrowDown;
+                let moveLeft = keys.a || keys.ArrowLeft;
+                let moveRight = keys.d || keys.ArrowRight;
+                let jump = keys.w || keys.ArrowUp;
+
+                let onGround = false;
+                let currentSlope = 0;
+
+                // Simple gravity
+                this.player.vy += this.gravity;
+
+                // Simple collision detection against lines (top of platforms)
+                let futureY = this.player.y + this.player.vy;
+                let futureX = this.player.x + this.player.vx;
+
+                for (let p of this.platforms) {
+                    // Check if player is within X bounds of platform
+                    if (futureX + this.player.width > p.x && futureX < p.x + p.w) {
+
+                        // Calculate expected Y on the platform surface
+                        let surfaceY = p.y;
+                        if (p.type === 'slope_down') {
+                            let ratio = (futureX - p.x) / p.w;
+                            surfaceY = p.y + (p.drop * ratio);
+                            currentSlope = p.drop / p.w; // rise over run
+                        } else if (p.type === 'ramp_up') {
+                            let ratio = (futureX - p.x) / p.w;
+                            surfaceY = p.y + (p.rise * ratio);
+                            currentSlope = p.rise / p.w;
+                        }
+
+                        // If player is falling through the surface
+                        if (this.player.y + this.player.height <= surfaceY + 15 && futureY + this.player.height >= surfaceY) {
+                            this.player.vy = 0;
+                            this.player.y = surfaceY - this.player.height;
+                            onGround = true;
+                            // Apply slope physics (gravity pushing down the slope)
+                            if (currentSlope !== 0) {
+                                let slopeForce = currentSlope * this.gravity * 2;
+                                // Tucking increases slope force greatly and reduces friction
+                                if (isTucking) {
+                                    this.player.vx += slopeForce * 2;
+                                } else {
+                                    this.player.vx += slopeForce;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (onGround) {
+                    if (jump) this.player.vy = -12; // Jump
+
+                    // Apply horizontal movement if not tucking
+                    if (!isTucking) {
+                        if (moveLeft) this.player.vx -= 0.5;
+                        if (moveRight) this.player.vx += 0.5;
+                    }
+
+                    // Apply ground friction (ice)
+                    this.player.vx *= (isTucking ? this.tuckFriction : this.friction);
+                } else {
+                    // Air controls
+                    if (moveLeft) this.player.vx -= 0.1;
+                    if (moveRight) this.player.vx += 0.1;
+                    this.player.vx *= this.airFriction;
+                }
+
+                // Update positions
+                this.player.x += this.player.vx;
+                this.player.y += this.player.vy;
+
+                // Death / Respawn bounds
+                if (this.player.y > 2000) {
+                    this.init(); // Reset demo
+                }
+
+                // Camera follow
+                this.camera.x += ((this.player.x - canvas.width / 3) - this.camera.x) * 0.1;
+                this.camera.y += ((this.player.y - canvas.height / 2) - this.camera.y) * 0.1;
+            },
+            draw() {
+                // Background
+                let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, '#87CEEB'); // Sky blue
+                gradient.addColorStop(1, '#e0f6ff');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.save();
+                ctx.translate(-this.camera.x, -this.camera.y);
+
+                // Draw Platforms (Ice style)
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 4;
+                for (let p of this.platforms) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    if (p.type === 'flat') {
+                        ctx.lineTo(p.x + p.w, p.y);
+                        ctx.lineTo(p.x + p.w, p.y + p.h);
+                        ctx.lineTo(p.x, p.y + p.h);
+                    } else if (p.type === 'slope_down') {
+                        ctx.lineTo(p.x + p.w, p.y + p.drop);
+                        ctx.lineTo(p.x + p.w, p.y + p.drop + p.h);
+                        ctx.lineTo(p.x, p.y + p.h);
+                    } else if (p.type === 'ramp_up') {
+                        ctx.lineTo(p.x + p.w, p.y + p.rise);
+                        ctx.lineTo(p.x + p.w, p.y + p.rise + p.h);
+                        ctx.lineTo(p.x, p.y + p.h);
+                    }
+                    ctx.closePath();
+
+                    let iceGradient = ctx.createLinearGradient(0, p.y, 0, p.y + 100);
+                    iceGradient.addColorStop(0, 'rgba(200, 240, 255, 0.9)');
+                    iceGradient.addColorStop(1, 'rgba(100, 200, 255, 0.5)');
+                    ctx.fillStyle = iceGradient;
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                // Draw Player (Glowing Cube)
+                ctx.fillStyle = '#ff0055';
+                let isTucking = keys.s || keys.ArrowDown;
+                let h = isTucking ? this.player.height / 2 : this.player.height;
+                let yOffset = isTucking ? this.player.height / 2 : 0;
+
+                ctx.shadowColor = '#ff0055';
+                ctx.shadowBlur = 15;
+                ctx.fillRect(this.player.x, this.player.y + yOffset, this.player.width, h);
+                ctx.shadowBlur = 0; // reset
+
+                // Speedometer debug
+                ctx.fillStyle = '#000';
+                ctx.font = "14px Arial";
+                ctx.fillText(`Speed: ${Math.abs(Math.round(this.player.vx))}`, this.player.x, this.player.y - 10);
+
+                ctx.restore();
+            }
+        };
+
+        // --- MAIN GAME LOOP ---
+        function gameLoop() {
+            if (currentState === 'cat') {
+                catGame.update();
+                catGame.draw();
+            } else if (currentState === 'ice') {
+                iceGame.update();
+                iceGame.draw();
+            }
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+    </script>
+</body>
+
+</html>
