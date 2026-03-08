@@ -96,8 +96,21 @@ If you don't use Go or prefer a lighter touch, PIOS is still highly effective as
 4. **The System Prompt:** The easiest way to kick off the agent is to give it the following explicit directive: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`. When you finish a task, check it off `[x]` and update `STATUS.md` before writing more code."*
 5. **Human Validation:** Without the CLI, *you* are the phase gate validator! Review the agent's work and check its `STATUS.md` discipline before allowing it to proceed to the next milestone.
 
-> **Coming Soon (v1.0 MCP):** In upcoming releases, the PIOS Go CLI will expose a native Model Context Protocol (MCP) server, allowing AI agents to invoke the validation tools natively via JSON-RPC instead of spawning sub-shells.
+### Connect the MCP Server (Agent Native Mode)
 
+The PIOS CLI incorporates a fully native Model Context Protocol (MCP) server. Once connected, your chosen AI agent can directly execute the validation tools as native JSON-RPC functions without needing to run sub-shell bash commands.
+
+**For Claude Code:**
+`claude mcp add pios-mcp -- pios mcp`
+
+**For Cursor:**
+1. Open Cursor Settings > Features > MCP.
+2. Click **+ Add new MCP server**.
+3. Name: `pios-mcp`
+4. Type: `command`
+5. Command: `pios mcp`
+
+Once connected, your AI instantly understands the `pios_validate`, `pios_status`, and `pios_init` tools!
 ### The Fully Autonomous Path (Agent-Driven)
 
 If you have a powerful agent (like Claude Code or a strong Windsurf cascade) and don't want to touch the terminal at all, you can give your AI a single "Zero-to-Hero" prompt that commands it to install PIOS, initialize the context, and start building in one shot.
@@ -199,4 +212,4 @@ By combining a robust personal AI infrastructure (to define your developer ident
 - [x] v0.4 - Contract Hardening & Backtesting
 - [x] v0.5 - Universal Context Scaffolding (`--ide`) & ASCII Easter Eggs
 - [x] v0.6 - Goreleaser Native Distribution & VitePress Documentation Site
-- [ ] v1.0 - Model Context Protocol (MCP) Server Integration & Stable Release Matrix
+- [x] v1.0 - Model Context Protocol (MCP) Server Integration & Stable Release Matrix

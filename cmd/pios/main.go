@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -11,6 +12,8 @@ import (
 	"strings"
 
 	"github.com/cclavin/pios/templates"
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
 	"gopkg.in/yaml.v3"
 )
 
@@ -70,6 +73,8 @@ func main() {
 		cmdStatus()
 	case "validate":
 		cmdValidate()
+	case "mcp":
+		cmdMcp()
 	case "cat", "meow":
 		cmdCat()
 	default:
@@ -88,6 +93,7 @@ func printUsage() {
 	fmt.Println("              Flags: --ide=<cursor|windsurf|claude>")
 	fmt.Println("  status      Parse STATUS.md and output a JSON summary")
 	fmt.Println("  validate    Validate tasks contract and phase gate completion")
+	fmt.Println("  mcp         Start the JSON-RPC stdio Model Context Protocol server")
 }
 
 func cmdInit(args []string) {
@@ -97,15 +103,23 @@ func cmdInit(args []string) {
 
 	fmt.Println("Initializing PIOS in the current directory...")
 
-	if err := os.MkdirAll("templates", 0755); err != nil {
-		fmt.Printf("Error creating templates directory: %v\n", err)
+	if err := InitializeTemplates(*ideFlag); err != nil {
+		fmt.Printf("Initialization failed: %v\n", err)
 		os.Exit(1)
+	}
+
+	fmt.Println("PIOS templates successfully initialized.")
+	printBanner()
+}
+
+func InitializeTemplates(ide string) error {
+	if err := os.MkdirAll("templates", 0755); err != nil {
+		return fmt.Errorf("error creating templates directory: %v", err)
 	}
 
 	files, err := fs.ReadDir(templates.FS, ".")
 	if err != nil {
-		fmt.Printf("Error reading embedded templates: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("error reading embedded templates: %v", err)
 	}
 
 	for _, file := range files {
@@ -116,7 +130,6 @@ func cmdInit(args []string) {
 		fileName := file.Name()
 		data, err := templates.FS.ReadFile(fileName)
 		if err != nil {
-			fmt.Printf("Error reading %s: %v\n", fileName, err)
 			continue
 		}
 
@@ -127,36 +140,44 @@ func cmdInit(args []string) {
 		}
 
 		targetPath := filepath.Join("templates", fileName)
-		if err := os.WriteFile(targetPath, data, 0644); err != nil {
-			fmt.Printf("Error writing %s: %v\n", targetPath, err)
-		}
+		_ = os.WriteFile(targetPath, data, 0644)
 	}
 
-	if *ideFlag != "" {
-		writeIDEContext(*ideFlag)
+	if ide != "" {
+		writeIDEContext(ide)
 	}
-
-	fmt.Println("PIOS templates successfully initialized.")
-	printBanner()
+	return nil
 }
 
 func cmdStatus() {
-	rootDir, err := findProjectRoot()
+	out, err := GetStatusData()
 	if err != nil {
 		fmt.Printf("{\"error\": \"%v\"}\n", err)
 		os.Exit(1)
+	}
+
+	jsonBytes, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		fmt.Printf("{\"error\": \"Failed to encode JSON. Error: %v\"}\n", err)
+		os.Exit(1)
+	}
+	fmt.Println(string(jsonBytes))
+}
+
+func GetStatusData() (map[string]interface{}, error) {
+	rootDir, err := findProjectRoot()
+	if err != nil {
+		return nil, err
 	}
 
 	data, err := os.ReadFile(filepath.Join(rootDir, "STATUS.md"))
 	if err != nil {
-		fmt.Printf("{\"error\": \"Failed to read STATUS.md: %v\"}\n", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("Failed to read STATUS.md: %v", err)
 	}
 
 	status, err := parseStatusFrontmatter(string(data))
 	if err != nil {
-		fmt.Printf("{\"error\": \"%v\"}\n", err)
-		os.Exit(1)
+		return nil, err
 	}
 
 	pending, inProg, done := countTasks(filepath.Join(rootDir, "templates", "tasks.md"))
@@ -169,36 +190,95 @@ func cmdStatus() {
 			"completed":   done,
 		},
 	}
-
-	jsonBytes, err := json.MarshalIndent(out, "", "  ")
-	if err != nil {
-		fmt.Printf("{\"error\": \"Failed to encode JSON. Error: %v\"}\n", err)
-		os.Exit(1)
-	}
-	fmt.Println(string(jsonBytes))
+	return out, nil
 }
 
 func cmdValidate() {
+	if err := ValidateContract(); err != nil {
+		fmt.Printf("Validation Failed: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Validation Passed: all task criteria are met.")
+	os.Exit(0)
+}
+
+func cmdMcp() {
+	s := server.NewMCPServer("pios-mcp", "1.0.0")
+
+	// pios_status
+	statusTool := mcp.NewTool("pios_status",
+		mcp.WithDescription("Parses the project's STATUS.md and TASKS.md to return the current phase gate, active tasks, and total progress."),
+	)
+	s.AddTool(statusTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		out, err := GetStatusData()
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Failed to get status data: %v", err)), nil
+		}
+		jsonBytes, err := json.MarshalIndent(out, "", "  ")
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Failed to encode JSON: %v", err)), nil
+		}
+		return mcp.NewToolResultText(string(jsonBytes)), nil
+	})
+
+	// pios_validate
+	validateTool := mcp.NewTool("pios_validate",
+		mcp.WithDescription("Programmatically scans the current tasks contract and asserts that no pending checklists exist before allowing the agent to proceed to the next milestone. If pending items exist, it returns an error."),
+	)
+	s.AddTool(validateTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		err := ValidateContract()
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Validation Failed: %v", err)), nil
+		}
+		return mcp.NewToolResultText("Validation Passed: all task criteria are met."), nil
+	})
+
+	// pios_init
+	initTool := mcp.NewTool("pios_init",
+		mcp.WithDescription("Initializes the PIOS templates and writes them to the current directory."),
+		mcp.WithString("ide", mcp.Description("Optional. IDE context to scaffold (cursor, windsurf, claude)")),
+	)
+	s.AddTool(initTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		var ide string
+		if args, ok := request.Params.Arguments.(map[string]interface{}); ok {
+			if val, ok := args["ide"].(string); ok {
+				ide = val
+			}
+		}
+
+		err := InitializeTemplates(ide)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Initialization failed: %v", err)), nil
+		}
+		return mcp.NewToolResultText("PIOS templates successfully initialized."), nil
+	})
+
+	// Start the stdio JSON-RPC loop
+	stdioServer := server.NewStdioServer(s)
+	if err := stdioServer.Listen(context.Background(), os.Stdin, os.Stdout); err != nil {
+		fmt.Fprintf(os.Stderr, "MCP server error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func ValidateContract() error {
 	rootDir, err := findProjectRoot()
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
 
 	data, err := os.ReadFile(filepath.Join(rootDir, "templates", "tasks.md"))
 	if err != nil {
-		fmt.Println("Error: templates/tasks.md not found.")
-		os.Exit(1)
+		return fmt.Errorf("templates/tasks.md not found")
 	}
 
 	version, err := parseTasksContractVersion(string(data))
 	if err != nil {
-		fmt.Printf("Validation Failed: %v\n", err)
-		os.Exit(1)
+		return err
 	}
 	if version != tasksContractVersion {
-		fmt.Printf("Validation Failed: unsupported tasks contract version '%s'. Expected '%s'.\n", version, tasksContractVersion)
-		os.Exit(1)
+		return fmt.Errorf("unsupported tasks contract version '%s'. Expected '%s'", version, tasksContractVersion)
 	}
 
 	lines := strings.Split(string(data), "\n")
@@ -216,17 +296,14 @@ func cmdValidate() {
 	}
 
 	if len(malformedLines) > 0 {
-		fmt.Printf("Validation Failed: malformed checkbox syntax at lines %v.\n", malformedLines)
-		os.Exit(1)
+		return fmt.Errorf("malformed checkbox syntax at lines %v", malformedLines)
 	}
 
 	if unchecked > 0 {
-		fmt.Printf("Validation Failed: found %d unchecked or in-progress items in tasks.\n", unchecked)
-		os.Exit(1)
+		return fmt.Errorf("found %d unchecked or in-progress items in tasks", unchecked)
 	}
 
-	fmt.Println("Validation Passed: all task criteria are met.")
-	os.Exit(0)
+	return nil
 }
 
 func writeIDEContext(ide string) {
