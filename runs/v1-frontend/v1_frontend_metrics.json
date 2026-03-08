@@ -1,0 +1,17 @@
+{
+    "benchmark_name": "User-Like Frontend (React/NextJS)",
+    "pios_version": "v1.0.0-rc",
+    "agent_engine": "Claude Sonnet 4.6 (via Claude Code)",
+    "execution_time_minutes": 10,
+    "human_clarification_turns": 0,
+    "context_restarts": 0,
+    "rework_events": 2,
+    "finish_rate_percentage": 100,
+    "artifacts_produced": {
+        "total_files": 17,
+        "total_lines_of_code": "unknown",
+        "tests_generated": false,
+        "build_steps_generated": true
+    },
+    "notes": "Excellent resilience to unstructured prompts. Two defects encountered natively by the agent (create-next-app directory conflict, and validator reading template checkboxes) were resolved by the agent in-flight without human clarification. Production build succeeded via Turbopack."
+}

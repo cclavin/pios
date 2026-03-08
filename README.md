@@ -93,8 +93,10 @@ If you don't use Go or prefer a lighter touch, PIOS is still highly effective as
 1. **Copy the Templates:** Manually copy `STATUS.md` and the Markdown files in the `/templates/` directory into your project's root or a `/docs` folder.
 2. **Set the Contract:** Fill out the specs just as you would with the CLI.
 3. **Initialize the Agent:** Pass the completed `tasks.md` and `status-template.md` to Claude, ChatGPT, Cursor, or Windsurf. 
-4. **The System Prompt:** Instruct your AI: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`. When you finish a task, check it off `[x]` and update `STATUS.md` before writing more code."*
+4. **The System Prompt:** The easiest way to kick off the agent is to give it the following explicit directive: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`. When you finish a task, check it off `[x]` and update `STATUS.md` before writing more code."*
 5. **Human Validation:** Without the CLI, *you* are the phase gate validator! Review the agent's work and check its `STATUS.md` discipline before allowing it to proceed to the next milestone.
+
+> **Coming Soon via MCP:** In upcoming releases, initializing the PIOS prompt and validation gates will be fully automated via a Model Context Protocol (MCP) server, completely removing the need to manually copy/paste templates or system prompts.
 
 ### The Clone & Run Path (CLI/IDE Native)
 
@@ -136,32 +138,26 @@ Track the following metrics:
 - Rework rate / context resets
 - Finish rate (0 or 1)
 
-### v0.4.0 Pre-Release Benchmarks
+### v1.0 Release Benchmarks
 
-To validate the PIOS execution contract model, the following three mini-projects were executed autonomously using the `pios` CLI strict phase gates. Each project went from a blank directory to validated completion in under 20 minutes.
+To validate the PIOS execution contract model outside of simple HTML environments, the following benchmarks were designed as strict "Zero Human Intervention" tests targeting multi-file architectures and package managers. Each project went from a blank directory to a validated, running build under total agent autonomy.
 
-> **Environment:** Gemini 3.1 (high reasoning) · Antigravity IDE · `pios` autopilot loop
+> **Environment:** Claude Sonnet 4.6 (Claude Code) · `pios` CLI · Zero Human Clarifications
 
 | Benchmark | Time ⏱️ | Clarification Turns | Rework Events | Context Resets | Finish Rate | Artifacts |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dual-Game Menu Showcase** | 15m | 0 | 0 | 0 | 100% | [view run](runs/archived-tests/game-menu/) |
-| **Physics Destruction Sim** | 5m | 0 | 0 | 0 | 100% | [view run](runs/archived-tests/destruction-sim/) |
-| **Excuse Generator Widget** | 10m | 0 | 0 | 0 | 100% | [view run](runs/archived-tests/excuse-widget/) |
+| **Robust Backend Constraint (Go + SQLite)** | 15m | 0 | 0 | 0 | 100% | [view full report](runs/v1-backend/) |
+| **User-Like Frontend (React/NextJS)** | 10m | 0 | 2 (Self-Resolved) | 0 | 100% | [view full report](runs/v1-frontend/) |
 
-> **Scope note:** All three pre-release benchmarks are frontend/HTML5 projects — the fastest class for validating scaffolding speed and phase gate discipline. v1.0 benchmarks will include backend services, CLIs, and multi-file architectures.
+> **Scope note:** Pre-release v0.4 frontend benchmarks are available in the [`runs/archived-tests/`](runs/archived-tests/) directory.
 
-#### 1. Dual-Game Menu & Mechanics Showcase
-- **Prompt:** *"A game menu with two games built in. One game is a serene cat that reacts slightly to clicks. The second game is a 2D platformer with slick ice physics, momentum mechanics, and a test map featuring a large hill and a jump."*
-- **Outcome:** A cohesive HTML5 Canvas experience with a menu linking to a serene interactive cat toy and a high-speed momentum-based 2D platformer. Demonstrates the framework's ability to scaffold non-trivial logic accurately on the first run.
+#### 1. Robust Backend Constraint (Go 1.22 + SQLite)
+- **Prompt:** A strict, highly constrained prompt demanding a Go 1.22 `net/http` REST API with persistent SQLite bindings via `modernc.org/sqlite` (no CGO), covered entirely by tests and packaged in a multi-stage `Dockerfile`.
+- **Outcome:** Flawless semantic execution. The PIOS contract prevented the agent from defaulting to popular but prohibited frameworks (like Gin or GORM). It correctly scoped the architecture, resolved internal state bugs via test suites, and pushed a production-grade multi-stage container. **10/10 passing tests. 0 human interventions.**
 
-#### 2. Physics Destruction Simulator *(unstructured input stress test)*
-- **Prompt:** *"Come up with a plan for an advanced, impressive physics engine demo that can run locally. Make the project manager decision and provide a ready-to-build plan for the benchmark."*
-- **Note:** This benchmark was intentionally run with a loose, open-ended prompt to stress-test whether PIOS phase gates would still enforce a structured output even without a structured input. They did.
-- **Outcome:** A polished HTML5 Canvas & Matter.js implementation featuring a dark theme, neon glass blocks, and mouse interaction. Zero compilation required.
-
-#### 3. Embeddable Excuse Generator Widget
-- **Prompt:** *"A random excuse generator for a button that loads a different excuse each time, designed as a widget that can be embedded and uploaded to common online stores for secure efficient CWV-friendly embed on websites."*
-- **Outcome:** A pristine Vanilla JS IIFE injecting scoped CSS and HTML, ensuring zero layout shifts (CWV-friendly) and a lightweight footprint.
+#### 2. User-Like Frontend (React + Next.js App Router)
+- **Prompt:** A loose, generalized prompt simply asking for a "nice looking dashboard... React, Next.js, Tailwind, dark mode, glassmorphism."
+- **Outcome:** A stress-test proving PIOS prevents code vomit on unstructured prompts. The project locked the layout and component structure in Phase 3 *before* building. During scaffolding, the agent encountered directory conflicts with `create-next-app` and validator read errors on template checkboxes. Because PIOS execution defines specific checkpoints, the agent recognized the defect, debugged its own path, and resolved it in-flight without breaking contract. **Turbopack build succeeded. 0 human interventions.**
 
 ---
 
