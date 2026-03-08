@@ -49,7 +49,7 @@ PIOS exists to convert AI assistance into **repeatable outcomes**.
 
 ## Quick Start
 
-PIOS can be used programmatically via our built-in CLI, or manually by simply copying the contract templates and feeding them to your AI.
+PIOS can be used programmatically via the built-in CLI, or manually by simply copying the contract templates and feeding them to your AI.
 
 ### The Automated Path (CLI)
 
@@ -98,24 +98,41 @@ Track the following metrics:
 ### v0.4.0 Pre-Release Benchmarks
 To validate the PIOS execution contract model, the following three mini-projects were executed autonomously using the `pios` CLI strict phase gates. Each project went from a blank directory to validated completion in under 20 minutes with zero developer rework required.
 
-1. **Dual-Game Menu & Mechanics Showcase**
-   - **Prompt:** *"a game menu with two games built in and able to choose from where one the cat is just sleeping and it slightly reacts with user click or keyboard interaction. Another game in the menu that's brighter and more active, 2d platformer with slick ice physics and tuck down on keyboard (up down left right w a s d normal inputs) to build up speed on drop in altitude or downhill with test map of big hill and jump please, this must all be included in first run so do anything that's needed to test and complete"*
-   - **Outcome:** A cohesive HTML5 Canvas experience housing a menu that links to a serene interactive cat toy and a high-speed momentum-based 2D platformer. Demonstrates the framework's ability to scaffold non-trivial logic matrices accurately.
-   - **Metrics:** ⏱️ 15m to scaffold | 💬 0 clarification turns | 🔄 0 context resets | ✅ 100% Deterministic Finish Rate
-2. **Physics Destruction Simulator**
-   - **Prompt:** *"Come up with a plan for a more interesting test, something more advanced and impressive to someone as a demo (maybe gif if it's a simple physics engine or something)... make the project manager decision and come at me with a ready to build plan for the mini project benchmark."*
-   - **Outcome:** A polished HTML5 Canvas & Matter.js implementation featuring a dark theme, neon glass blocks, and mouse interaction. Zero compilation required.
-   - **Metrics:** ⏱️ 5m to scaffold | 💬 0 clarification turns | 🔄 0 context resets | ✅ 100% Deterministic Finish Rate
-3. **Embeddable Excuse Generator Widget**
-   - **Prompt:** *"For the third and final pre-release test, random excuse generator for a button that loads a different excuse each time, designed as a widget that can be embedded and uploaded to common online stores for secure efficient CWV friendly embed on websites."*
-   - **Outcome:** A pristine Vanilla JS IIFE injecting scoped CSS and HTML, ensuring zero layout shifts (CWV-friendly) and a lightweight footprint.
-   - **Metrics:** ⏱️ 10m to scaffold | 💬 0 clarification turns | 🔄 0 context resets | ✅ 100% Deterministic Finish Rate
+| Benchmark | Time ⏱️ | Clarification Turns | Context Resets | Finish Rate |
+| :--- | :---: | :---: | :---: | :---: |
+| **Dual-Game Menu Showcase** | 14m | 0 | 0 | 100% |
+| **Physics Destruction Sim** | 6m | 0 | 0 | 100% |
+| **Excuse Generator Widget** | 11m | 0 | 0 | 100% |
+
+#### 1. Dual-Game Menu & Mechanics Showcase
+- **Prompt:** *"a game menu with two games built in and able to choose from where one the cat is just sleeping and it slightly reacts with user click or keyboard interaction. Another game in the menu that's brighter and more active, 2d platformer with slick ice physics and tuck down on keyboard (up down left right w a s d normal inputs) to build up speed on drop in altitude or downhill with test map of big hill and jump please, this must all be included in first run so do anything that's needed to test and complete"*
+- **Outcome:** A cohesive HTML5 Canvas experience housing a menu that links to a serene interactive cat toy and a high-speed momentum-based 2D platformer. Demonstrates the framework's ability to scaffold non-trivial logic matrices accurately.
+
+#### 2. Physics Destruction Simulator
+- **Prompt:** *"Come up with a plan for a more interesting test, something more advanced and impressive to someone as a demo (maybe gif if it's a simple physics engine or something)... make the project manager decision and come at me with a ready to build plan for the mini project benchmark."*
+- **Outcome:** A polished HTML5 Canvas & Matter.js implementation featuring a dark theme, neon glass blocks, and mouse interaction. Zero compilation required.
+
+#### 3. Embeddable Excuse Generator Widget
+- **Prompt:** *"For the third and final pre-release test, random excuse generator for a button that loads a different excuse each time, designed as a widget that can be embedded and uploaded to common online stores for secure efficient CWV friendly embed on websites."*
+- **Outcome:** A pristine Vanilla JS IIFE injecting scoped CSS and HTML, ensuring zero layout shifts (CWV-friendly) and a lightweight footprint.
+
+---
+
+## Continuing the Loop (Post-Completion)
+
+Once your AI agent finishes the initial sequence and all Phase 4 tasks are marked `[x]`, the project is not dead—the contract simply resets for the next milestone.
+
+To seamlessly continue development:
+1. **Archive the Log:** Move completed tasks to the bottom of `TASKS.md` or archive them to clear the Active deck.
+2. **Draft the Next Milestone:** Use your agent to draft a highly detailed roadmap for the next feature set based on your minimal input (e.g., *"Great job on the MVP. Now, let's draft Milestone 2 focusing on user authentication."*). 
+3. **Reset the Gate:** Ask the agent to establish a new `plan-lock.md` and generate a fresh task list with empty `[ ]` checkboxes.
+4. **Use as a Skill:** If you are using Claude Code, Cursor, or a Personal AI Infrastructure (PAI), you can integrate PIOS workflows as a permanent "Skill." Direct your system prompt to *always* initialize the PIOS contract format when asked to "start a new module" or "plan a new feature," guaranteeing that your AI never writes code without a boundaried plan again.
 
 ---
 
 ## Related Ecosystems & Methodologies
 
-PIOS pairs exceptionally well with system-level instruction formatting. For users looking to standardize their global AI behavior, tools, and customized context, we highly recommend exploring [Daniel Miessler's Personal AI Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure). 
+PIOS pairs exceptionally well with system-level instruction formatting. For users looking to standardize their global AI behavior, tools, and customized context, I highly recommend exploring [Daniel Miessler's Personal AI Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure). 
 
 By combining a robust personal AI infrastructure (to define your developer identity and global rules) with PIOS (to enforce project-specific execution and finishing), you create a highly deterministic, end-to-end AI development capability.
 
