@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/cclavin/pios/templates"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -73,6 +74,8 @@ func main() {
 		cmdStatus()
 	case "validate":
 		cmdValidate()
+	case "next":
+		cmdNext()
 	case "mcp":
 		cmdMcp()
 	case "cat", "meow":
@@ -93,7 +96,16 @@ func printUsage() {
 	fmt.Println("              Flags: --ide=<cursor|windsurf|claude>")
 	fmt.Println("  status      Parse STATUS.md and output a JSON summary")
 	fmt.Println("  validate    Validate tasks contract and phase gate completion")
+	fmt.Println("  next        Archive completed tasks, snapshot the milestone, and reset the board")
 	fmt.Println("  mcp         Start the JSON-RPC stdio Model Context Protocol server")
+}
+
+func cmdNext() {
+	if err := SnapshotMilestone(); err != nil {
+		fmt.Printf("Error capturing milestone snapshot: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("✓ Milestone snapshot complete. Completed tasks archived. STATUS block reset.")
 }
 
 func cmdInit(args []string) {
@@ -249,9 +261,21 @@ func cmdMcp() {
 
 		err := InitializeTemplates(ide)
 		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Initialization failed: %v", err)), nil
+			return mcp.NewToolResultError(fmt.Sprintf("Init failed: %v", err)), nil
 		}
 		return mcp.NewToolResultText("PIOS templates successfully initialized."), nil
+	})
+
+	// pios_next
+	nextTool := mcp.NewTool("pios_next",
+		mcp.WithDescription("Transitions to the next milestone by snapshotting the current STATUS.md and templates/tasks.md into an archive, erasing [x] completed tasks from the active board, and resetting STATUS to 'Next Milestone Planning'."),
+	)
+	s.AddTool(nextTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		err := SnapshotMilestone()
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Milestone snapshot failed: %v", err)), nil
+		}
+		return mcp.NewToolResultText("Snapshot complete. Completed tasks archived. STATUS block reset."), nil
 	})
 
 	// Start the stdio JSON-RPC loop
@@ -301,6 +325,67 @@ func ValidateContract() error {
 
 	if unchecked > 0 {
 		return fmt.Errorf("found %d unchecked or in-progress items in tasks", unchecked)
+	}
+
+	return nil
+}
+
+func SnapshotMilestone() error {
+	rootDir, err := findProjectRoot()
+	if err != nil {
+		return err
+	}
+
+	tasksPath := filepath.Join(rootDir, "templates", "tasks.md")
+	statusPath := filepath.Join(rootDir, "STATUS.md")
+
+	tasksData, err := os.ReadFile(tasksPath)
+	if err != nil {
+		return fmt.Errorf("templates/tasks.md not found")
+	}
+
+	statusData, err := os.ReadFile(statusPath)
+	if err != nil {
+		return fmt.Errorf("STATUS.md not found")
+	}
+
+	timestamp := time.Now().Format("2006-01-02_15-04-05")
+	archiveDir := filepath.Join(rootDir, "templates", "archive", timestamp)
+
+	if err := os.MkdirAll(archiveDir, 0755); err != nil {
+		return fmt.Errorf("failed to create archive directory: %v", err)
+	}
+
+	if err := os.WriteFile(filepath.Join(archiveDir, "tasks.md"), tasksData, 0644); err != nil {
+		return fmt.Errorf("failed to snapshot tasks.md: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(archiveDir, "STATUS.md"), statusData, 0644); err != nil {
+		return fmt.Errorf("failed to snapshot STATUS.md: %v", err)
+	}
+
+	// Filter completed tasks
+	lines := strings.Split(string(tasksData), "\n")
+	var newTasks []string
+	for _, line := range lines {
+		if !completedTaskRe.MatchString(line) {
+			newTasks = append(newTasks, line)
+		}
+	}
+
+	if err := os.WriteFile(tasksPath, []byte(strings.Join(newTasks, "\n")), 0644); err != nil {
+		return fmt.Errorf("failed to rewrite tasks.md: %v", err)
+	}
+
+	// Reset STATUS.md
+	statusStr := string(statusData)
+	phaseRe := regexp.MustCompile(`(?m)^current_phase:\s*".*"`)
+	statusRe := regexp.MustCompile(`(?m)^status:\s*".*"`)
+
+	statusStr = phaseRe.ReplaceAllString(statusStr, `current_phase: "Next Milestone Planning"`)
+	statusStr = statusRe.ReplaceAllString(statusStr, `status: "Not Started"`)
+
+	if err := os.WriteFile(statusPath, []byte(statusStr), 0644); err != nil {
+		return fmt.Errorf("failed to rewrite STATUS.md: %v", err)
 	}
 
 	return nil

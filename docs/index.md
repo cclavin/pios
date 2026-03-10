@@ -17,7 +17,7 @@ features:
   - title: Contract Driven
     details: Phase gates formally lock requirements before code is written, drastically reducing AI drift and logical looping.
   - title: Model Agnostic
-    details: Use Claude 3.7, GPT-4o, or Gemini 2.0. PIOS enforces the structural logic on top of whatever cognitive model you bring.
+    details: Use Claude, GPT, or Gemini. PIOS enforces the structural logic on top of whatever cognitive model you bring.
   - title: Framework Independent
     details: From Python APIs to Rust CLIs to React web apps, PIOS handles the systems architecture while you enforce the boundaries.
   - title: Agent Optimized

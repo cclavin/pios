@@ -173,15 +173,21 @@ To validate the PIOS execution contract model outside of simple HTML environment
 
 ---
 
-## Continuing the Loop (Post-Completion)
+## The Continuous Building Loop (`pios next`)
 
-Once your AI agent finishes the initial sequence and all Phase 4 tasks are marked `[x]`, the project is not dead—the contract simply resets for the next milestone.
+Once your AI agent finishes the initial milestone and all tasks are marked `[x]`, the project is not dead—in fact, this is where PIOS shines.
 
-To seamlessly continue development:
-1. **Archive the Log:** Move completed tasks to the bottom of `TASKS.md` or archive them to clear the Active deck.
-2. **Draft the Next Milestone:** Use your agent to draft a highly detailed roadmap for the next feature set based on your minimal input (e.g., *"Great job on the MVP. Now, let's draft Milestone 2 focusing on user authentication."*). 
-3. **Reset the Gate:** Ask the agent to establish a new `plan-lock.md` and generate a fresh task list with empty `[ ]` checkboxes.
-4. **Use as a Skill:** If you are using Claude Code, Cursor, or a Personal AI Infrastructure (PAI), you can integrate PIOS workflows as a permanent "Skill." Direct your system prompt to *always* initialize the PIOS contract format when asked to "start a new module" or "plan a new feature," guaranteeing that your AI never writes code without a boundaried plan again.
+When you are ready for the next feature, simply run:
+```bash
+pios next
+```
+
+This instantly executes the PIOS Continuous Loop protocol:
+1. **Snapshot:** It creates a timestamped archive (`templates/archive/YYYY-MM.../`) of your completed `TASKS.md` and `STATUS.md` so you never lose the history of your technical decisions.
+2. **Sweep:** It scrubs all `[x]` checked tasks from your active tasks file, leaving behind a clean board containing any rolled-over pending items.
+3. **Reset:** It resets your `STATUS.md` phase gates back to planning mode.
+
+If you are connected via the **MCP Server**, your AI agent can even run `pios_next` by itself! You can simply prompt: *"Great job on the auth layer. Run the next command, then let's draft Milestone 2 focusing on the database adapter."*
 
 ---
 
