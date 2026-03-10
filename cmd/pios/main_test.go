@@ -115,6 +115,23 @@ status: "Active"
 	}
 }
 
+func TestParseStatusFrontmatterInvalidGate(t *testing.T) {
+	content := `---
+pios_version: "1.0.0"
+current_phase: "v1.0.0"
+current_gate: "Hallucinated Phase"
+status: "In Progress"
+---`
+
+	_, err := parseStatusFrontmatter(content)
+	if err == nil {
+		t.Fatalf("expected error for invalid current_gate")
+	}
+	if !strings.Contains(err.Error(), "unsupported current_gate") {
+		t.Fatalf("expected unsupported current_gate error, got: %v", err)
+	}
+}
+
 func TestParseTasksContractVersion(t *testing.T) {
 	content := `---
 pios_contract_version: "1.0"
@@ -215,5 +232,56 @@ pios_contract_version: "1.0"
 	entries, err := os.ReadDir(archiveParent)
 	if err != nil || len(entries) == 0 {
 		t.Fatalf("archive directory was not created: %v", err)
+	}
+}
+
+// TestValidateContractArtifactExistence ensures the CLI throws a hard error if the upstream planning artifacts are missing.
+func TestValidateContractArtifactExistence(t *testing.T) {
+	tempDir := t.TempDir()
+
+	// Switch working directory to temp to trick findProjectRoot
+	originalWd, _ := os.Getwd()
+	os.Chdir(tempDir)
+	defer os.Chdir(originalWd)
+
+	// Create a dummy STATUS.md so findProjectRoot passes
+	os.WriteFile("STATUS.md", []byte("---"), 0644)
+
+	templatesDir := filepath.Join(tempDir, "templates")
+	os.MkdirAll(templatesDir, 0755)
+
+	// Create valid tasks.md
+	tasksContent := `---
+pios_contract_version: "1.0"
+---
+### Phase 1
+- [x] Task 1`
+	os.WriteFile(filepath.Join(templatesDir, "tasks.md"), []byte(tasksContent), 0644)
+
+	// Scenario 1: All artifacts missing. Should fail explicitly on "min-spec.md" first.
+	err := ValidateContract()
+	if err == nil || !strings.Contains(err.Error(), "min-spec.md is missing") {
+		t.Fatalf("expected missing min-spec error, got: %v", err)
+	}
+
+	// Scenario 2: Fix min-spec.md. Should fail on spec-lock.md
+	os.WriteFile(filepath.Join(templatesDir, "min-spec.md"), []byte("mock"), 0644)
+	err = ValidateContract()
+	if err == nil || !strings.Contains(err.Error(), "spec-lock.md is missing") {
+		t.Fatalf("expected missing spec-lock error, got: %v", err)
+	}
+
+	// Scenario 3: Fix spec-lock.md. Should fail on plan-lock.md
+	os.WriteFile(filepath.Join(templatesDir, "spec-lock.md"), []byte("mock"), 0644)
+	err = ValidateContract()
+	if err == nil || !strings.Contains(err.Error(), "plan-lock.md is missing") {
+		t.Fatalf("expected missing plan-lock error, got: %v", err)
+	}
+
+	// Scenario 4: Fix plan-lock.md. Everything should pass.
+	os.WriteFile(filepath.Join(templatesDir, "plan-lock.md"), []byte("mock"), 0644)
+	err = ValidateContract()
+	if err != nil {
+		t.Fatalf("expected validation to pass, but got: %v", err)
 	}
 }

@@ -1,4 +1,4 @@
-﻿# PIOS Contract Specification (v1.0)
+# PIOS Contract Specification (v1.0)
 
 This document defines the contract enforced by the PIOS CLI.
 
@@ -6,10 +6,15 @@ PIOS is a project execution contract layer. It does not orchestrate runtimes.
 
 ## Contract Artifacts
 
-The CLI relies on two files:
+The CLI relies on these files:
 
 1. `STATUS.md`
-2. `templates/tasks.md`
+2. `templates/min-spec.md`
+3. `templates/spec-lock.md`
+4. `templates/plan-lock.md`
+5. `templates/tasks.md`
+
+`pios validate` will outright refuse to pass if the upstream planning artifacts (`min-spec`, `spec-lock`, `plan-lock`) do not exist.
 
 ## `STATUS.md` Contract
 
@@ -31,9 +36,23 @@ status: "In Progress"
 ---
 ```
 
+### Current Gate value contract
+
+To prevent agents from hallucinating random phases, `current_gate` must strictly be one of:
+
+- `Minimum Spec`
+- `Spec Lock`
+- `Plan Lock`
+- `Task Lock`
+- `Implementation`
+- `Validation`
+- `Release`
+- `Positioning and Contract Hardening` (Legacy format specific to V0.4 repo builds)
+- `Contract Hardening` (Legacy format specific to early V0.4 blueprints)
+
 ### Status value contract
 
-`status` must be one of:
+`status` must strictly be one of:
 
 - `Not Started`
 - `In Progress`

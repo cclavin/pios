@@ -41,11 +41,23 @@ var inProgressTaskRe = regexp.MustCompile(`^(?i)\s*(?:###\s+|-\s+)\[/\]`)
 var completedTaskRe = regexp.MustCompile(`^(?i)\s*(?:###\s+|-\s+)\[[xX]\]`)
 var checkboxLikeRe = regexp.MustCompile(`^(?i)\s*(?:###|-)\s*\[[^\]]*\]`)
 
-var allowedStatusValues = map[string]struct{}{
-	"Not Started": {},
-	"In Progress": {},
-	"Blocked":     {},
-	"Done":        {},
+var allowedStatusValues = map[string]bool{
+	"Not Started": true,
+	"In Progress": true,
+	"Blocked":     true,
+	"Done":        true,
+}
+
+var allowedGateValues = map[string]bool{
+	"Minimum Spec":                       true,
+	"Spec Lock":                          true,
+	"Plan Lock":                          true,
+	"Task Lock":                          true,
+	"Implementation":                     true,
+	"Validation":                         true,
+	"Release":                            true,
+	"Contract Hardening":                 true, // Legacy support for V0.4 benchmarks
+	"Positioning and Contract Hardening": true, // Legacy support for V0.4 blueprints
 }
 
 type StatusFrontmatter struct {
@@ -303,6 +315,18 @@ func ValidateContract() error {
 		return err
 	}
 
+	requiredArtifacts := []string{
+		"min-spec.md",
+		"spec-lock.md",
+		"plan-lock.md",
+	}
+
+	for _, artifact := range requiredArtifacts {
+		if _, err := os.Stat(filepath.Join(rootDir, "templates", artifact)); os.IsNotExist(err) {
+			return fmt.Errorf("upstream artifact templates/%s is missing. AI must complete the planning artifacts before proceeding to validation", artifact)
+		}
+	}
+
 	data, err := os.ReadFile(filepath.Join(rootDir, "templates", "tasks.md"))
 	if err != nil {
 		return fmt.Errorf("templates/tasks.md not found")
@@ -484,6 +508,9 @@ func parseStatusFrontmatter(content string) (StatusFrontmatter, error) {
 	}
 	if status.Status == "" {
 		return status, fmt.Errorf("failed to parse STATUS.md: missing required frontmatter key 'status'")
+	}
+	if _, ok := allowedGateValues[status.CurrentGate]; !ok {
+		return status, fmt.Errorf("failed to parse STATUS.md: unsupported current_gate '%s'", status.CurrentGate)
 	}
 	if _, ok := allowedStatusValues[status.Status]; !ok {
 		return status, fmt.Errorf("failed to parse STATUS.md: unsupported status '%s'", status.Status)
