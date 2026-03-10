@@ -7,6 +7,8 @@ Recommended:
 - Export concise rules to `.cursorrules` (or `.cursor/rules/`).
 - Pin `AGENTS.md` in context.
 
+> **MCP Server Integration:** PIOS features a live MCP server. In Cursor (Settings > Features > MCP), add a new shell command server named `PIOS` with the command `pios mcp`. This gives Cursor native access to `pios_status`, `pios_validate`, and `pios_next`.
+
 Workflow:
 - Architect phase in chat
 - Scaffold phase as repo edits

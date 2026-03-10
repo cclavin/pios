@@ -7,6 +7,8 @@ Recommended:
 - Use PIOS phases explicitly to reduce back-and-forth.
 - Generate scaffolds file-by-file for reliability.
 
+> **MCP Server Integration:** PIOS features a live MCP server. If your Windsurf environment supports the Model Context Protocol, you can attach PIOS by setting its command to `pios mcp`. This grants the agent access to validation and continuous loop tools.
+
 ## Core PIOS Instructions
 > **Note:** PIOS is an execution contract layer, not a runtime platform. Follow these strict validations explicitly.
 
