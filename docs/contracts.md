@@ -1,4 +1,4 @@
-﻿# PIOS Contract Specification (v0.4)
+﻿# PIOS Contract Specification (v1.0)
 
 This document defines the contract enforced by the PIOS CLI.
 
@@ -24,8 +24,8 @@ Example:
 
 ```yaml
 ---
-pios_version: "0.4.0"
-current_phase: "v0.4.0 positioning reset"
+pios_version: "1.0.0"
+current_phase: "v1.0.0 PIOS Execution"
 current_gate: "Positioning and Contract Hardening"
 status: "In Progress"
 ---
@@ -46,11 +46,11 @@ status: "In Progress"
 
 ```yaml
 ---
-pios_contract_version: "0.4"
+pios_contract_version: "1.0"
 ---
 ```
 
-If the key is missing or the version is not `0.4`, `pios validate` must fail.
+If the key is missing or the version is not `1.0`, `pios validate` must fail.
 
 ### Accepted checkbox line forms
 

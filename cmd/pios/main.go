@@ -18,7 +18,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const tasksContractVersion = "0.4"
+const tasksContractVersion = "1.0"
 
 const ideContextPrompt = "You are operating under the PIOS execution contract. Read AGENTS.md. You must validate your work against the phase gates. Update STATUS.md and check off items in TASKS.md. Run `pios validate` frequently to ensure you are passing the gates."
 
@@ -101,7 +101,13 @@ func printUsage() {
 }
 
 func cmdNext() {
-	if err := SnapshotMilestone(); err != nil {
+	rootDir, err := findProjectRoot()
+	if err != nil {
+		fmt.Printf("Error locating project root: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := snapshotMilestone(rootDir); err != nil {
 		fmt.Printf("Error capturing milestone snapshot: %v\n", err)
 		os.Exit(1)
 	}
@@ -271,7 +277,12 @@ func cmdMcp() {
 		mcp.WithDescription("Transitions to the next milestone by snapshotting the current STATUS.md and templates/tasks.md into an archive, erasing [x] completed tasks from the active board, and resetting STATUS to 'Next Milestone Planning'."),
 	)
 	s.AddTool(nextTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		err := SnapshotMilestone()
+		rootDir, err := findProjectRoot()
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Failed to locate project root: %v", err)), nil
+		}
+
+		err = snapshotMilestone(rootDir)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("Milestone snapshot failed: %v", err)), nil
 		}
@@ -330,12 +341,7 @@ func ValidateContract() error {
 	return nil
 }
 
-func SnapshotMilestone() error {
-	rootDir, err := findProjectRoot()
-	if err != nil {
-		return err
-	}
-
+func snapshotMilestone(rootDir string) error {
 	tasksPath := filepath.Join(rootDir, "templates", "tasks.md")
 	statusPath := filepath.Join(rootDir, "STATUS.md")
 

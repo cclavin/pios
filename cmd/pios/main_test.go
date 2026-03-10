@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -64,8 +66,8 @@ func TestRegexMatches(t *testing.T) {
 
 func TestParseStatusFrontmatterValid(t *testing.T) {
 	content := `---
-pios_version: "0.4.0"
-current_phase: "v0.4.0"
+pios_version: "1.0.0"
+current_phase: "v1.0.0"
 current_gate: "Plan Lock"
 status: "In Progress"
 ---
@@ -82,8 +84,8 @@ status: "In Progress"
 
 func TestParseStatusFrontmatterMissingKey(t *testing.T) {
 	content := `---
-pios_version: "0.4.0"
-current_phase: "v0.4.0"
+pios_version: "1.0.0"
+current_phase: "v1.0.0"
 status: "In Progress"
 ---`
 
@@ -98,8 +100,8 @@ status: "In Progress"
 
 func TestParseStatusFrontmatterInvalidStatus(t *testing.T) {
 	content := `---
-pios_version: "0.4.0"
-current_phase: "v0.4.0"
+pios_version: "1.0.0"
+current_phase: "v1.0.0"
 current_gate: "Plan Lock"
 status: "Active"
 ---`
@@ -115,7 +117,7 @@ status: "Active"
 
 func TestParseTasksContractVersion(t *testing.T) {
 	content := `---
-pios_contract_version: "0.4"
+pios_contract_version: "1.0"
 ---
 # TASKS`
 
@@ -123,8 +125,8 @@ pios_contract_version: "0.4"
 	if err != nil {
 		t.Fatalf("expected valid tasks frontmatter, got error: %v", err)
 	}
-	if version != "0.4" {
-		t.Fatalf("expected version 0.4, got %s", version)
+	if version != "1.0" {
+		t.Fatalf("expected version 1.0, got %s", version)
 	}
 }
 
@@ -149,5 +151,69 @@ func TestMalformedCheckboxDetectionRegex(t *testing.T) {
 		if pendingTaskRe.MatchString(line) || inProgressTaskRe.MatchString(line) || completedTaskRe.MatchString(line) {
 			t.Fatalf("expected malformed line to fail strict checkbox regex: %s", line)
 		}
+	}
+}
+
+func TestSnapshotMilestone(t *testing.T) {
+	tempDir := t.TempDir()
+
+	// Create mock templates directory
+	templatesDir := filepath.Join(tempDir, "templates")
+	if err := os.MkdirAll(templatesDir, 0755); err != nil {
+		t.Fatalf("failed to create templates dir: %v", err)
+	}
+
+	mockStatus := `---
+pios_version: "1.0.0"
+current_phase: "v1.0.0"
+current_gate: "Plan Lock"
+status: "Done"
+---
+# STATUS`
+
+	mockTasks := `---
+pios_contract_version: "1.0"
+---
+### Phase 1
+- [x] Task 1
+- [x] Task 2
+### Phase 2
+- [ ] Task 3
+- [/] Task 4`
+
+	if err := os.WriteFile(filepath.Join(tempDir, "STATUS.md"), []byte(mockStatus), 0644); err != nil {
+		t.Fatalf("failed to write mock STATUS.md")
+	}
+	if err := os.WriteFile(filepath.Join(templatesDir, "tasks.md"), []byte(mockTasks), 0644); err != nil {
+		t.Fatalf("failed to write mock tasks.md")
+	}
+
+	// Run the snapshot
+	if err := snapshotMilestone(tempDir); err != nil {
+		t.Fatalf("snapshotMilestone failed: %v", err)
+	}
+
+	// Verify STATUS.md was reset
+	newStatusBytes, _ := os.ReadFile(filepath.Join(tempDir, "STATUS.md"))
+	newStatusStr := string(newStatusBytes)
+	if !strings.Contains(newStatusStr, `status: "Not Started"`) || !strings.Contains(newStatusStr, `current_phase: "Next Milestone Planning"`) {
+		t.Fatalf("STATUS.md was not properly reset. Got: %s", newStatusStr)
+	}
+
+	// Verify tasks.md was cleaned of [x] but kept [ ] / [/]
+	newTasksBytes, _ := os.ReadFile(filepath.Join(templatesDir, "tasks.md"))
+	newTasksStr := string(newTasksBytes)
+	if strings.Contains(newTasksStr, "[x] Task 1") || strings.Contains(newTasksStr, "[x] Task 2") {
+		t.Fatalf("tasks.md still contains completed tasks!")
+	}
+	if !strings.Contains(newTasksStr, "[ ] Task 3") || !strings.Contains(newTasksStr, "[/] Task 4") {
+		t.Fatalf("tasks.md lost its pending or in-progress tasks!")
+	}
+
+	// Verify archive exists
+	archiveParent := filepath.Join(templatesDir, "archive")
+	entries, err := os.ReadDir(archiveParent)
+	if err != nil || len(entries) == 0 {
+		t.Fatalf("archive directory was not created: %v", err)
 	}
 }

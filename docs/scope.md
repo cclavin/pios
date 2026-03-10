@@ -1,6 +1,6 @@
-﻿# PIOS Scope (v0.4.0)
+﻿# PIOS Scope (v1.0.0)
 
-This document locks what is in scope for v0.4.0.
+This document locks what is in scope for v1.0.0.
 
 ## In Scope
 

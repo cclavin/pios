@@ -1,5 +1,5 @@
 ﻿---
-pios_contract_version: "0.4"
+pios_contract_version: "1.0"
 ---
 # TASKS (Phase 4)
 

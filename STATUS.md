@@ -1,18 +1,17 @@
 ---
-pios_version: "0.4.0"
-current_phase: "v0.4.0 positioning reset"
-current_gate: "Contract Hardening"
+pios_version: "1.0.0"
+current_phase: "v1.0.0 Release Readiness"
+current_gate: "Release"
 status: "Done"
 ---
 # STATUS
 
 ## Current Phase
-- Phase: v0.4.0 positioning reset
+- Phase: v1.0.0 Release Readiness
 
 ## Next 3 Actions
-1) Finalize positioning and scope docs
-2) Lock contract grammar and templates
-3) Harden validator and tests
+1) Push v1.0.0 tag to trigger Goreleaser
+2) Publish Winget and Homebrew repos
 
 ## Blockers
 - None
@@ -21,7 +20,7 @@ status: "Done"
 - None
 
 ## Risks
-- Scope creep into runtime tooling
+- None
 
 ## Notes
-- Keep CLI gate checks deterministic and cross-platform.
+- Repository successfully cleaned up and audited for V1.0 launch.

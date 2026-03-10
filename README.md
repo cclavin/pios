@@ -21,13 +21,13 @@
 
 ## Mission
 
-PIOS is built on the belief that human attention is our most valuable resource. The current generation of AI tools often leads to endless chat sessions that waste time, compute, and energy without producing tangible results. PIOS exists to return **agency and focus** to developers. By enforcing deterministic boundaries and execution contracts, PIOS ensures that AI serves as a direct catalyst for human creativity rather than a conversational sinkhole - helping you build useful things, faster, and with less frustration.
+PIOS is built on the belief that human attention is our most valuable resource. The current generation of AI tools often leads to endless chat sessions that waste time, compute, and energy without producing tangible results. PIOS exists to return **agency and focus** to developers. By enforcing deterministic boundaries and execution contracts, PIOS ensures that AI serves as a direct catalyst for human creativity rather than a conversational sinkhole, helping you build useful things, faster, and with less frustration.
 
 ---
 
 ## Core Positioning
 
-PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable workflows — not just chat.
+PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable workflows, not just chat.
 
 - **Completion-first:** PIOS operates on **phase gates** with explicit exit criteria (Minimum Spec → Spec Lock → Plan Lock → Task Lock → Scaffold Done) and an **autopilot loop** (implement → test → fix → document → summarize).
 - **Contract-first:** PIOS is not a competing "rules format." It establishes a source-of-truth contract. Maintain core guidance in PIOS via `AGENTS.md` (tool-agnostic baseline) and tool-specific adapters. This keeps your repo consistent even as tools change.
@@ -116,10 +116,17 @@ cd my-new-project
 rm -rf .git
 ```
 
-### 5. The Manual / Creative Path (Framework Agnostic)
+### 5. Open-Source Agents (OpenHands, Cline, OpenClaw)
+
+If you are running local open-source agents inside sandboxed containers or local environments, PIOS provides the perfect structure.
+1. Command the agent to install PIOS: `go install github.com/cclavin/pios/cmd/pios@latest`
+2. Command them to run `pios init` in the workspace.
+3. Because these agents possess shell execution capabilities, they will naturally use `pios validate` and `pios next` to govern their own loops, guaranteeing they don't hallucinate out of bounds.
+
+### 6. The Manual / Creative Path (Framework Agnostic)
 
 If you are just having a chat on the ChatGPT web interface, PIOS is still highly effective.
-1. manually copy `STATUS.md` and the Markdown files in the `/templates/` directory into your project's `/docs` folder.
+1. Manually copy `STATUS.md` and the Markdown files in the `/templates/` directory into your project's `/docs` folder.
 2. Fill out the specs.
 3. Pass the completed `tasks.md` to ChatGPT along with the strict prompt: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`."*
 4. Without the CLI, *you* are the manual phase gate validator! Ensure the AI respects the checklist.
@@ -175,9 +182,17 @@ To validate the PIOS execution contract model outside of simple HTML environment
 
 ## The Continuous Building Loop (`pios next`)
 
-Once your AI agent finishes the initial milestone and all tasks are marked `[x]`, the project is not dead—in fact, this is where PIOS shines.
+Once your AI agent finishes the initial milestone and all tasks are marked `[x]`, the project is not dead. In fact, this is where PIOS shines.
 
-When you are ready for the next feature, simply run:
+There are two primary ways to operate between milestones depending on your comfort level:
+
+**1. Normal Sprints (Human-in-the-Loop)**
+For standard Agile-style development, you act as the product manager. When a milestone finishes, you pause the AI, review the code, and mentally verify the business logic. Then, you manually run `pios next` to execute the system snapshot, after which you write the specs for the next sprint and hand it back to the AI.
+
+**2. Experimental Autonomy**
+If you want to see how far an agent can go on its own, PIOS enables continuous, unprompted building. An agent connected to the MCP Server (or a powerful open-source agent with CLI access) can finish its tasks and instantly invoke `pios_next` by itself. It will archive its own work, generate its own roadmap for the next milestone, and start coding again—indefinitely.
+
+When you are ready for the next feature (or when your agent decides it's ready), simply run:
 ```bash
 pios next
 ```
