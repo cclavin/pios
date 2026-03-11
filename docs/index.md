@@ -21,5 +21,5 @@ features:
   - title: Framework Independent
     details: From Python APIs to Rust CLIs to React web apps, PIOS handles the systems architecture while you enforce the boundaries.
   - title: Agent Optimized
-    details: Out-of-the-box support for CLI-based agents like Claude Code, and deep IDE integration for Windsurf and Cursor.
+    details: Native support for MCP-capable tools like Claude Code, Cursor, and Windsurf, plus CLI-first workflows for Codex and other terminal agents.
 ---

@@ -12,10 +12,10 @@
 - [Mission](#mission)
 - [How It Works](#how-it-works)
 - [Repository Layout](#repository-layout)
-- [Quick Start](#quick-start)
+- [Tutorials & Workflows](#tutorials--workflows)
 - [Example Prompts](#example-prompts)
 - [Backtesting PIOS](#backtesting-pios)
-- [Continuing the Loop](#continuing-the-loop-post-completion)
+- [Continuous Building Loop](#the-continuous-building-loop-pios-next)
 - [Related Ecosystems](#related-ecosystems--methodologies)
 - [Roadmap](#roadmap)
 
@@ -55,27 +55,28 @@ PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable 
 
 ## Tutorials & Workflows
 
-PIOS can be used in five distinct ways, depending on how deeply you want to integrate it into your AI developer environment. Choose the workflow that best fits your style.
+PIOS works best when you make two decisions up front: how your tool connects to the contract, and who advances the milestone. The recommended starting point is MCP or CLI with a human reviewing each completed milestone. Autonomous looping is available, but it is still experimental.
 
-### 1. The Agent-Native Path (MCP Server) - *Highly Recommended*
+### 1. The MCP-Native Path (Recommended)
 
-This is the most powerful way to use PIOS. The CLI incorporates a fully native Model Context Protocol (MCP) server. Once connected, your AI agent reads the current tasks and validates its own phase gates over a background JSON-RPC connection—you never have to type `pios validate` in the terminal!
+This is the best fit for Claude Code, Cursor, and Windsurf setups that support MCP. Instead of parsing terminal output, the agent can call PIOS tools directly over JSON-RPC.
 
 **The Setup:**
 *   **For Claude Code:** Run `claude mcp add pios-mcp -- pios mcp`
-*   **For Cursor:** Open Settings > Features > MCP. Click **+ Add new MCP server**. Set Name to `pios`, Type to `command`, and Command to `pios mcp`.
+*   **For Cursor:** Open Settings > Features > MCP and add a shell command server with the command `pios mcp`.
+*   **For Windsurf:** If your setup supports MCP servers, attach PIOS with the command `pios mcp`.
 
 **The Daily Workflow:**
-1.  Run `pios init` in a new folder to drop the project templates.
-2.  Fill out your `templates/min-spec.md`.
-3.  Prompt your connected agent (e.g., *"Review my PIOS spec and begin compiling the plan-lock."*).
-4.  As the agent writes code, it will automatically call the `pios_validate` tool to check its own work before moving to the next milestone!
+1.  Run `pios init` in a new folder, or let the agent call `pios_init` in an empty project.
+2.  Fill out `templates/min-spec.md`, then lock the scope and planning artifacts.
+3.  Let the agent call `pios_status` before coding, `pios_validate` before closing a milestone, and `pios_next` only when the current milestone is complete and you want to continue.
 
-### 2. The Command-Line Path (Human-in-the-loop)
+### 2. The Command-Line Path (Default Human-Gated Loop)
 
-If you prefer to manually control the phase gates while the AI writes the code, the native Golang CLI instantly injects templates and tracks the repository state via strict terminal commands.
+If your tool can edit files and run shell commands but does not have MCP attached, use the CLI directly. This is the safest default for Codex, Continue, local open-source agents, and terminal-first workflows.
 
-**Install the CLI:**
+**Install PIOS:**
+Native package-manager installs via Homebrew and Winget are intended to be the primary path. Until those packages are published, use the Go fallback:
 ```bash
 go install github.com/cclavin/pios/cmd/pios@latest
 ```
@@ -84,44 +85,53 @@ go install github.com/cclavin/pios/cmd/pios@latest
 ```bash
 pios init --ide=cursor
 ```
-This drops the templates and scaffolds the IDE context rules inline. Your daily workflow simply consists of letting the AI build, and you manually typing `pios validate` to ensure the contract is met before checking off the milestone.
 
-### 3. The Zero-to-Hero Path (Fully Autonomous)
+This seeds the contract into the repo and can also scaffold IDE-specific rule files. Supported `--ide` values are `cursor`, `windsurf`, and `claude`. From there, the standard loop is simple: let the agent work one task at a time, use `pios status` to check context, use `pios validate` to close the gate, and run `pios next` only after you decide the milestone is done.
 
-If you have a powerful agent (like a strong Windsurf cascade) and don't want to touch the terminal at all, you can give your AI a single "Zero-to-Hero" prompt that commands it to install the CLI locally, initialize the context, and start building in one shot.
+### 3. The Existing Repo / Retrofit Path
+
+PIOS is not only for greenfield projects. You can adopt it in an active repo without restructuring your app.
+
+1.  Run `pios init` at the repo root.
+2.  Backfill `templates/min-spec.md`, `templates/spec-lock.md`, `templates/plan-lock.md`, and `templates/tasks.md` from the current state of the project.
+3.  Update `STATUS.md` so it reflects the milestone and gate you are actually in.
+4.  Resume work under normal PIOS validation.
+
+If your repo already uses a root `templates/` directory for app assets or generator output, decide how you want to resolve that conflict before adopting PIOS so the contract layout stays stable.
+
+### 4. The Vendored Contract Path (No Go Install Yet)
+
+If you do not want to install Go yet, you can still use PIOS as a Markdown contract. Copy the core files into your repo and keep the canonical layout so you can adopt the CLI later without moving anything around.
+
+- Keep `AGENTS.md` at the repo root
+- Keep `STATUS.md` at the repo root
+- Keep `templates/` at the repo root
+
+### 5. The Chat-Only Path (Manual Phase Gates)
+
+If you are working in a chat tool that cannot write files or run commands, PIOS is still usable.
+
+1.  Keep the canonical PIOS files in the repo root.
+2.  Fill out the specs and task list yourself.
+3.  Give the chat tool the active artifacts it needs, especially `AGENTS.md`, `STATUS.md`, and `templates/tasks.md`.
+4.  You become the validator: update checkboxes, review output, and decide when the next gate or milestone is allowed.
+
+### Optional Bootstrap: The Zero-to-Hero Prompt
+
+If you have a shell-capable agent in an empty directory and want a one-shot bootstrap, you can give it a prompt that installs PIOS using the best available method for the host OS, runs `pios init`, reads `AGENTS.md`, and starts building. Treat this as a bootstrap recipe, not the default daily workflow.
 
 **Example Prompt:**
-> "First, check if Go is installed on my system. If not, best-effort install it silently for my OS. Once Go is installed, install the PIOS cli globally via `go install github.com/cclavin/pios/cmd/pios@latest`. 
-> 
-> Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read the `AGENTS.md` file to understand the contract. Finally, proceed through the PIOS phases to build me a python script that scrapes hacker news."
+> "First, install PIOS using the best available method for my OS. Prefer a native package-manager install if PIOS is available through Homebrew or Winget. If not, install Go 1.22+ and then run `go install github.com/cclavin/pios/cmd/pios@latest`.
+>
+> Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read the `AGENTS.md` file to understand the contract. Finally, proceed through the PIOS phases to build me a Python script that scrapes Hacker News."
 
-### 4. The Clone & Run Path (CLI/IDE Native)
+**Where Different Tools Fit:**
+- Claude Code, Cursor, and Windsurf are best on the MCP-native path when MCP is available.
+- Codex, Continue, and shell-capable open-source agents are best on the CLI path.
+- ChatGPT and similar chat-only tools fit the manual path.
+- OpenClaw-style autonomous agents fit the CLI path today, then layer on the experimental loop below.
 
-If you just want the rule framework without installing Go or running a global binary on your machine, simply clone the repository into your new project folder. This gives your AI the `AGENTS.md` context without any system dependencies.
-
-```bash
-# Clone the repository
-git clone https://github.com/cclavin/pios.git my-new-project
-cd my-new-project
-
-# Remove the .git folder to start fresh
-rm -rf .git
-```
-
-### 5. Open-Source Agents (OpenHands, Cline, OpenClaw)
-
-If you are running local open-source agents inside sandboxed containers or local environments, PIOS provides the perfect structure.
-1. Command the agent to install PIOS: `go install github.com/cclavin/pios/cmd/pios@latest`
-2. Command them to run `pios init` in the workspace.
-3. Because these agents possess shell execution capabilities, they will naturally use `pios validate` and `pios next` to govern their own loops, guaranteeing they don't hallucinate out of bounds.
-
-### 6. The Manual / Creative Path (Framework Agnostic)
-
-If you are just having a chat on the ChatGPT web interface, PIOS is still highly effective.
-1. Manually copy `STATUS.md` and the Markdown files in the `/templates/` directory into your project's `/docs` folder.
-2. Fill out the specs.
-3. Pass the completed `tasks.md` to ChatGPT along with the strict prompt: *"You are operating under the PIOS execution contract. Read `AGENTS.md`. Only work on tasks marked `[ ]`."*
-4. Without the CLI, *you* are the manual phase gate validator! Ensure the AI respects the checklist.
+For tool-specific setup details, see [Claude](tool-adapters/claude.md), [Cursor](tool-adapters/cursor.md), [Windsurf](tool-adapters/windsurf.md), [Codex](tool-adapters/codex.md), [Continue](tool-adapters/continue.md), and [OpenClaw](tool-adapters/openclaw.md).
 
 ---
 
@@ -174,27 +184,54 @@ To validate the PIOS execution contract model outside of simple HTML environment
 
 ## The Continuous Building Loop (`pios next`)
 
-Once your AI agent finishes the initial milestone and all tasks are marked `[x]`, the project is not dead. In fact, this is where PIOS shines.
+Once a milestone is complete and all active tasks are marked `[x]`, `pios next` prepares the repo for the next milestone. It is a transition command, not a planning engine.
 
-There are two primary ways to operate between milestones depending on your comfort level:
+There are two solid ways to use it:
 
-**1. Normal Sprints (Human-in-the-Loop)**
-For standard Agile-style development, you act as the product manager. When a milestone finishes, you pause the AI, review the code, and mentally verify the business logic. Then, you manually run `pios next` to execute the system snapshot, after which you write the specs for the next sprint and hand it back to the AI.
+**1. Recommended: Human-Gated Continuation**
+Review the completed milestone first. When you are satisfied, run `pios next`. Then write the next spec, plan, and task artifacts before asking the agent to continue.
 
-**2. Experimental Autonomy**
-If you want to see how far an agent can go on its own, PIOS enables continuous, unprompted building. An agent connected to the MCP Server (or a powerful open-source agent with CLI access) can finish its tasks and instantly invoke `pios_next` by itself. It will archive its own work, generate its own roadmap for the next milestone, and start coding again—indefinitely.
+**2. Experimental: Agent-Driven Continuation**
+If your agent is connected through MCP or has reliable shell access, it can run `pios_next` or `pios next` itself after the milestone is complete. This works best on bounded projects where the agent is already following the task contract cleanly.
 
-When you are ready for the next feature (or when your agent decides it's ready), simply run:
+When you are ready for the next feature, run:
 ```bash
 pios next
 ```
 
-This instantly executes the PIOS Continuous Loop protocol:
+This executes the PIOS transition loop:
 1. **Snapshot:** It creates a timestamped archive (`templates/archive/YYYY-MM.../`) of your completed `TASKS.md` and `STATUS.md` so you never lose the history of your technical decisions.
 2. **Sweep:** It scrubs all `[x]` checked tasks from your active tasks file, leaving behind a clean board containing any rolled-over pending items.
 3. **Reset:** It resets your `STATUS.md` phase gates back to planning mode.
 
-If you are connected via the **MCP Server**, your AI agent can even run `pios_next` by itself! You can simply prompt: *"Great job on the auth layer. Run the next command, then let's draft Milestone 2 focusing on the database adapter."*
+What it does **not** do by itself is invent the next milestone, rewrite the spec, or choose the next product direction. After the reset, either you or the agent still needs to draft the next spec, plan, and task list before implementation resumes.
+
+If you want to experiment with autonomous continuation, use these guardrails:
+1. Only call `pios_next` after `pios_validate` passes and the current milestone is genuinely complete.
+2. Keep milestones small and concrete.
+3. Review the archive and the next task plan at each loop.
+4. Prefer human gating for production, security-sensitive, or multi-developer repos.
+
+**Experimental Full-Autonomy Prompt:**
+```text
+You are operating under the PIOS execution contract.
+
+Goal:
+<one bounded project goal>
+
+Loop rules:
+1. Call `pios_status` or run `pios status` at the start of each cycle.
+2. Only work on tasks marked `[ ]` in `templates/tasks.md`.
+3. Mark the active task `[/]`, complete it, verify it, then mark it `[x]`.
+4. When a milestone is complete, run `pios_validate`.
+5. If validation passes, run `pios_next`.
+6. Immediately draft the next `templates/spec-lock.md`, `templates/plan-lock.md`, and `templates/tasks.md`, and update `STATUS.md` for the next milestone.
+7. Do not start implementation for the new milestone until those artifacts are updated.
+8. Continue automatically only if the next milestone still fits the original project goal.
+9. Stop and summarize if blocked, if a product-direction decision is needed, or if deployment or security review needs a human.
+```
+
+If you are connected via the **MCP Server**, your AI agent can run `pios_next` itself. A good short prompt is: *"Great job on the auth layer. Run the next command, then draft Milestone 2 spec, plan, and tasks focused on the database adapter. Do not start implementation until those artifacts are updated."*
 
 ---
 

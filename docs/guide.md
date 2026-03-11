@@ -1,41 +1,103 @@
 # Getting Started with PIOS
 
-PIOS (Project Input/Output System) is not a wrapper, an LLM, or a runtime. It is a **strict execution contract** designed to force modern AI agents to behave deterministically.
+PIOS (Project Input/Output System) is not a wrapper, an LLM, or a runtime. It is a strict execution contract designed to force modern AI agents to behave deterministically.
 
 ## The Problem
-When using powerful agents like Claude Code or Cursor, it is incredibly easy for the agent to:
+
+When using powerful agents like Claude Code, Cursor, or Codex, it is easy for the agent to:
 1. Start coding before the architecture is actually thought out.
-2. Fall into endless loops trying to fix one bug while breaking another.
-3. Hallucinate new files or dependencies that you did not ask for.
+2. Fall into loops trying to fix one bug while breaking another.
+3. Hallucinate files, dependencies, or milestones that you did not ask for.
 
 ## The Solution
-PIOS forces the AI into a rigid waterfall structure known as **Phase Gates**. 
 
-Before the AI is permitted to write a single line of application code, it must:
-1. Formally lock the project scope (`spec-lock.md`).
-2. Formally lock the architectural plan (`plan-lock.md`).
-3. Formally list out every single task required to build the plan (`tasks.md`).
+PIOS forces the workflow into explicit phase gates.
 
-Once it begins coding, it must check off every single task in `tasks.md`. It cannot move to a new phase until all tasks are complete, and you (the human) validate the gate.
+Before the agent is permitted to write application code, it should:
+1. Lock the project scope in `templates/spec-lock.md`.
+2. Lock the implementation plan in `templates/plan-lock.md`.
+3. Lock the task board in `templates/tasks.md`.
+
+Once implementation starts, the agent works only from the active tasks, validates the gate, and moves forward only when the contract is satisfied.
 
 ## Installation
 
-### The Zero-To-Hero Agent Prompt
-If you use a background agent (like Claude Code) and don't want to type anything, run the agent in an empty folder and paste this prompt:
+### Preferred Install Path
 
-> "First, check if Go is installed on my system. If not, figure out the best way to install it silently for my OS. Once Go is installed, install the PIOS cli globally via `go install github.com/cclavin/pios/cmd/pios@latest`. Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read the `AGENTS.md` file to understand the contract."
-
-### Manual CLI Installation
-If you prefer to install it yourself, ensure Go 1.22+ is installed, then run:
+Native package-manager installs via Homebrew and Winget are intended to be the primary way to install PIOS. Until those packages are published, use the Go fallback:
 
 ```bash
 go install github.com/cclavin/pios/cmd/pios@latest
 ```
 
-Then, initialize a new project folder:
+### Initialize a Project
+
 ```bash
 mkdir my-app && cd my-app
-pios init
+pios init --ide=cursor
 ```
 
-*Note: If you use Cursor or Windsurf, run `pios init --ide=cursor` to instantly import the native PIOS rules into your IDE.*
+Supported `--ide` values are `cursor`, `windsurf`, and `claude`.
+
+### MCP Setup
+
+If your tool supports MCP, connect PIOS through:
+
+```bash
+pios mcp
+```
+
+That gives the agent native access to `pios_status`, `pios_validate`, `pios_init`, and `pios_next`.
+
+## Recommended Usage
+
+### Default Path: MCP or CLI With Human-Gated Milestones
+
+This is the safest and most reliable workflow.
+
+1. Create or retrofit the repo with `pios init`.
+2. Fill out `templates/min-spec.md`, then lock the spec, plan, and tasks.
+3. Let the agent implement against the active tasks only.
+4. Use `pios status` or `pios_status` to check context.
+5. Use `pios validate` or `pios_validate` to close the milestone.
+6. Run `pios next` only after you decide the milestone is complete.
+
+### Zero-To-Hero Bootstrap Prompt
+
+If you want a shell-capable agent to bootstrap everything in one shot, use a prompt like this:
+
+> "First, install PIOS using the best available method for my OS. Prefer a native package-manager install if PIOS is available through Homebrew or Winget. If not, install Go 1.22+ and then run `go install github.com/cclavin/pios/cmd/pios@latest`. Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read `AGENTS.md` to understand the contract, then proceed through the PIOS phases."
+
+Treat this as a bootstrap recipe, not the default daily workflow.
+
+### Experimental Autonomous Continuation
+
+If you want to see how far an agent can go on its own, keep the project bounded and use explicit loop rules.
+
+```text
+You are operating under the PIOS execution contract.
+
+Goal:
+<one bounded project goal>
+
+Loop rules:
+1. Call `pios_status` or run `pios status` at the start of each cycle.
+2. Only work on tasks marked `[ ]` in `templates/tasks.md`.
+3. Mark the active task `[/]`, complete it, verify it, then mark it `[x]`.
+4. When a milestone is complete, run `pios_validate`.
+5. If validation passes, run `pios_next`.
+6. Immediately draft the next `templates/spec-lock.md`, `templates/plan-lock.md`, and `templates/tasks.md`, and update `STATUS.md` for the next milestone.
+7. Do not start implementation for the new milestone until those artifacts are updated.
+8. Continue automatically only if the next milestone still fits the original project goal.
+9. Stop and summarize if blocked, if product direction is unclear, or if security or deployment risk needs human review.
+```
+
+## Tool-Specific Adapters
+
+For tool-specific setup, see:
+- [Claude](../tool-adapters/claude.md)
+- [Cursor](../tool-adapters/cursor.md)
+- [Windsurf](../tool-adapters/windsurf.md)
+- [Codex](../tool-adapters/codex.md)
+- [Continue](../tool-adapters/continue.md)
+- [OpenClaw](../tool-adapters/openclaw.md)
