@@ -241,14 +241,22 @@ func TestValidateContractArtifactExistence(t *testing.T) {
 
 	// Switch working directory to temp to trick findProjectRoot
 	originalWd, _ := os.Getwd()
-	os.Chdir(tempDir)
-	defer os.Chdir(originalWd)
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("failed to chdir to temp dir: %v", err)
+	}
+	defer func() {
+		_ = os.Chdir(originalWd)
+	}()
 
 	// Create a dummy STATUS.md so findProjectRoot passes
-	os.WriteFile("STATUS.md", []byte("---"), 0644)
+	if err := os.WriteFile("STATUS.md", []byte("---"), 0644); err != nil {
+		t.Fatalf("failed to write dummy STATUS.md: %v", err)
+	}
 
 	templatesDir := filepath.Join(tempDir, "templates")
-	os.MkdirAll(templatesDir, 0755)
+	if err := os.MkdirAll(templatesDir, 0755); err != nil {
+		t.Fatalf("failed to create templates directory: %v", err)
+	}
 
 	// Create valid tasks.md
 	tasksContent := `---
@@ -256,7 +264,9 @@ pios_contract_version: "1.0"
 ---
 ### Phase 1
 - [x] Task 1`
-	os.WriteFile(filepath.Join(templatesDir, "tasks.md"), []byte(tasksContent), 0644)
+	if err := os.WriteFile(filepath.Join(templatesDir, "tasks.md"), []byte(tasksContent), 0644); err != nil {
+		t.Fatalf("failed to write dummy tasks.md: %v", err)
+	}
 
 	// Scenario 1: All artifacts missing. Should fail explicitly on "min-spec.md" first.
 	err := ValidateContract()
@@ -265,21 +275,27 @@ pios_contract_version: "1.0"
 	}
 
 	// Scenario 2: Fix min-spec.md. Should fail on spec-lock.md
-	os.WriteFile(filepath.Join(templatesDir, "min-spec.md"), []byte("mock"), 0644)
+	if err := os.WriteFile(filepath.Join(templatesDir, "min-spec.md"), []byte("mock"), 0644); err != nil {
+		t.Fatalf("failed to write dummy min-spec.md: %v", err)
+	}
 	err = ValidateContract()
 	if err == nil || !strings.Contains(err.Error(), "spec-lock.md is missing") {
 		t.Fatalf("expected missing spec-lock error, got: %v", err)
 	}
 
 	// Scenario 3: Fix spec-lock.md. Should fail on plan-lock.md
-	os.WriteFile(filepath.Join(templatesDir, "spec-lock.md"), []byte("mock"), 0644)
+	if err = os.WriteFile(filepath.Join(templatesDir, "spec-lock.md"), []byte("mock"), 0644); err != nil {
+		t.Fatalf("failed to write dummy spec-lock.md: %v", err)
+	}
 	err = ValidateContract()
 	if err == nil || !strings.Contains(err.Error(), "plan-lock.md is missing") {
 		t.Fatalf("expected missing plan-lock error, got: %v", err)
 	}
 
 	// Scenario 4: Fix plan-lock.md. Everything should pass.
-	os.WriteFile(filepath.Join(templatesDir, "plan-lock.md"), []byte("mock"), 0644)
+	if err = os.WriteFile(filepath.Join(templatesDir, "plan-lock.md"), []byte("mock"), 0644); err != nil {
+		t.Fatalf("failed to write dummy plan-lock.md: %v", err)
+	}
 	err = ValidateContract()
 	if err != nil {
 		t.Fatalf("expected validation to pass, but got: %v", err)

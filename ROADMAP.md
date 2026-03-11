@@ -33,3 +33,4 @@
 ## Deferred / Later
 - Interop exporters to transpile `profiles/` into Cursor/Continue/Windsurf `.rules` formats.
 - Integrations: hooks, commit templates
+- **Epic: Architectural Refactoring** Move domain logic (Frontmatter parsing, Status extraction) from `main` to `internal/status`, and CLI setup down to `internal/cli` to keep `cmd/pios/main.go` focused purely on wiring commands.
