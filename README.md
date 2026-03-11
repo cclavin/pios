@@ -29,7 +29,7 @@ PIOS is built on the belief that human attention is our most valuable resource. 
 
 PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable workflows, not just chat.
 
-- **Completion-first:** PIOS operates on **phase gates** with explicit exit criteria (Minimum Spec → Spec Lock → Plan Lock → Task Lock → Scaffold Done) and an **autopilot loop** (implement → test → fix → document → summarize).
+- **Completion-first:** PIOS operates on **phase gates** with explicit exit criteria. The CLI strictly enforces both artifact existence (specs must exist before coding) and checklist completion (Minimum Spec → Spec Lock → Plan Lock → Task Lock → Scaffold Done).
 - **Contract-first:** PIOS is not a competing "rules format." It establishes a source-of-truth contract. Maintain core guidance in PIOS via `AGENTS.md` (tool-agnostic baseline) and tool-specific adapters. This keeps your repo consistent even as tools change.
 - **Artifact-first:** Focuses strictly on files, diffs, commands, and checklists. Minimal prose.
 - **Framework & Runtime Agnostic:** PIOS doesn't care if you use Cursor, Copilot, Windsurf, or a background Claude/OpenAI agent. It serves as the immutable data layer that any AI can read to understand exactly what to do next.
