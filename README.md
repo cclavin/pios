@@ -1,16 +1,16 @@
 # π PIOS - AI Project Execution Contract
 
-[![Version](https://img.shields.io/github/v/release/cclavin/PIOS?color=orange&label=version)](https://github.com/cclavin/PIOS/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/cclavin/pios)](https://goreportcard.com/report/github.com/cclavin/PIOS)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/github/v/release/cclavin/PIOS?color=orange&label=version)](https://github.com/cclavin/PIOS/releases) [![Go Version](https://img.shields.io/badge/go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev/) [![CI](https://github.com/cclavin/pios/actions/workflows/ci.yml/badge.svg)](https://github.com/cclavin/pios/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/cclavin/pios)](https://goreportcard.com/report/github.com/cclavin/PIOS) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
   <img src="pios-banner.gif" alt="PIOS - Contracts over vibes. Build useful things, faster." />
 </p>
 
+**Works with:** Claude Code · GPT · Cursor · Windsurf · Codex · Continue · OpenClaw · OpenHands · Cline · any tool that reads Markdown
+
 ## Table of Contents
 - [Mission](#mission)
-- [Core Positioning](#core-positioning)
+- [How It Works](#how-it-works)
 - [Repository Layout](#repository-layout)
 - [Quick Start](#quick-start)
 - [Example Prompts](#example-prompts)
@@ -21,11 +21,17 @@
 
 ## Mission
 
-PIOS is built on the belief that human attention is our most valuable resource. The current generation of AI tools often leads to endless chat sessions that waste time, compute, and energy without producing tangible results. PIOS exists to return **agency and focus** to developers. By enforcing deterministic boundaries and execution contracts, PIOS ensures that AI serves as a direct catalyst for human creativity rather than a conversational sinkhole, helping you build useful things, faster, and with less frustration.
+I've struggled with effectively completing projects — I'm sure we all have a graveyard of folders and old projects that had something there, but the momentum did not continue. PIOS lets you carry momentum.
+
+I built it because too many AI workflows turn into endless chat instead of forward motion. Spend less time back-and-forth in chat, and more time deploying, dreaming new features, and rapidly prototyping.
+
+PIOS gives that momentum a structure. It uses deterministic artifacts, phase gates, and explicit validation so the repo stays grounded in what is actually done, not what was vaguely discussed.
+
+I wanted to make effective AI-assisted development more approachable to beginners, but highly powerful for advanced users too.
 
 ---
 
-## Core Positioning
+## How It Works
 
 PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable workflows, not just chat.
 
@@ -36,23 +42,9 @@ PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable 
 
 ---
 
-## Core Philosophy
-
-PIOS exists to convert AI assistance into **repeatable outcomes**.
-
-1. **Contracts over vibes:** Start with structured inputs (specs) that can be refined without restarting.
-2. **Artifacts over chat:** Produce files, diffs, commands, and checklists.
-3. **Phase gates:** Each phase ends only when exit criteria are met.
-4. **Tool-agnostic by default:** Build a source of truth and export to tool-specific formats.
-5. **Completion-first:** PIOS optimizes for finishing, not perfect planning.
-6. **Autopilot loops:** Default workflow is implement → test → fix → document → summarize.
-7. **Decisions are logged:** Avoid re-litigating choices.
-
----
-
 ## Repository Layout
 
-- `cmd/pios/` — the Golang PIOS validator CLI
+- `cmd/pios/` — the Golang PIOS CLI + MCP server
 - `templates/` — reusable project artifacts (specs, plans, tasks, decision logs) safely embedded into the CLI
 - `agents/` — role-specific agent instructions
 - `tool-adapters/` — guidance for using PIOS with specific tools
