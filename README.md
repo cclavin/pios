@@ -237,9 +237,11 @@ If you are connected via the **MCP Server**, your AI agent can run `pios_next` i
 
 ## Related Ecosystems & Methodologies
 
-PIOS pairs exceptionally well with system-level instruction formatting. For users looking to standardize their global AI behavior, tools, and customized context, I highly recommend exploring [Daniel Miessler's Personal AI Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure). 
+PIOS is designed to be modular. It doesn't replace your favorite methodologies; it gives them a machine-readable execution layer. PIOS pairs exceptionally well with:
 
-By combining a robust personal AI infrastructure (to define your developer identity and global rules) with PIOS (to enforce project-specific execution and finishing), you create a highly deterministic, end-to-end AI development capability.
+- **[Daniel Miessler's Personal AI Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure):** For users looking to standardize their global AI behavior and customized context. Combine a robust personal AI infrastructure (to define your developer identity) with PIOS (to enforce project-specific finishing) for a highly deterministic, end-to-end AI capability.
+- **Get Shit Done (GSD):** If you already subscribe to fast-iteration, momentum-focused workflows, PIOS serves as the strict, artifact-driven enforcer of those philosophies. It stops AI chat loops so you actually get the thing built.
+- **System Prompt Libraries:** Whether you use custom `CLAUDE.md` files or specialized Cursor profiles, PIOS operates flawlessly underneath them as the source-of-truth project state.
 
 ---
 
