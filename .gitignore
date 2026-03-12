@@ -6,3 +6,6 @@ pios-*.exe
 # Output
 runs/
 node_modules/
+
+# Secrets
+.env

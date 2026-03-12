@@ -21,13 +21,13 @@
 
 ## Mission
 
-I've struggled with effectively completing projects — I'm sure we all have a graveyard of folders and old projects that had something there, but the momentum did not continue. PIOS lets you carry momentum.
+I've struggled with effectively completing projects, and I'm sure we all have a graveyard of folders and old projects that had something there, but the momentum did not continue. PIOS lets you carry momentum.
 
 I built it because too many AI workflows turn into endless chat instead of forward motion. Spend less time back-and-forth in chat, and more time deploying, dreaming new features, and rapidly prototyping.
 
 PIOS gives that momentum a structure. It uses deterministic artifacts, phase gates, and explicit validation so the repo stays grounded in what is actually done, not what was vaguely discussed.
 
-I wanted to make effective AI-assisted development more approachable to beginners, but highly powerful for advanced users too.
+I wanted to make effective AI-assisted development more approachable to beginners, but highly powerful for advanced users, too.
 
 ---
 
@@ -55,7 +55,7 @@ PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable 
 
 ## Tutorials & Workflows
 
-PIOS works best when you make two decisions up front: how your tool connects to the contract, and who advances the milestone. The recommended starting point is MCP or CLI with a human reviewing each completed milestone. Autonomous looping is available, but it is still experimental.
+PIOS works best when you make two decisions up front: how your tool connects to the contract, and who advances the milestone. The recommended starting point is MCP or CLI with a human reviewing each completed milestone. Autonomous looping is available, but is still experimental.
 
 ### 1. The MCP-Native Path (Recommended)
 
