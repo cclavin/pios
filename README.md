@@ -245,19 +245,6 @@ PIOS is designed to be modular. It doesn't replace your favorite methodologies; 
 
 ---
 
-## Documentation Website
-
-PIOS includes a dedicated documentation website built with VitePress (located in the `docs` folder). To run the documentation locally:
-
-```bash
-cd docs
-npm install
-npm run docs:dev
-```
-Then open `http://localhost:5173` in your browser.
-
----
-
 ## Roadmap
 
 - [x] v0.1 - templates, agents, adapters, workflows, backtest harness
