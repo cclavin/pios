@@ -20,8 +20,7 @@ builds:
       - arm64
 
 archives:
-  - format: tar.gz
-    name_template: >-
+  - name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
@@ -36,7 +35,7 @@ checksum:
   name_template: 'checksums.txt'
 
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 
 changelog:
   sort: asc
@@ -45,7 +44,7 @@ changelog:
       - '^docs:'
       - '^test:'
 
-brews:
+homebrews:
   - repository:
       owner: cclavin
       name: homebrew-tap
@@ -63,8 +62,13 @@ winget:
     short_description: "AI Project Execution Contract CLI"
     homepage: "https://github.com/cclavin/PIOS"
     repository:
-      owner: microsoft
+      owner: cclavin
       name: winget-pkgs
-      branch: pios-{{.Version}}
+      branch: "pios-{{.Version}}"
       pull_request:
+        enabled: true
         draft: false
+        base:
+          owner: microsoft
+          name: winget-pkgs
+          branch: master
