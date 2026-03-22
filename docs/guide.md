@@ -107,9 +107,9 @@ Loop rules:
 ## Tool-Specific Adapters
 
 For tool-specific setup, see:
-- [Claude](../tool-adapters/claude.md)
-- [Cursor](../tool-adapters/cursor.md)
-- [Windsurf](../tool-adapters/windsurf.md)
-- [Codex](../tool-adapters/codex.md)
-- [Continue](../tool-adapters/continue.md)
-- [OpenClaw](../tool-adapters/openclaw.md)
+- [Claude](https://github.com/cclavin/PIOS/blob/main/tool-adapters/claude.md)
+- [Cursor](https://github.com/cclavin/PIOS/blob/main/tool-adapters/cursor.md)
+- [Windsurf](https://github.com/cclavin/PIOS/blob/main/tool-adapters/windsurf.md)
+- [Codex](https://github.com/cclavin/PIOS/blob/main/tool-adapters/codex.md)
+- [Continue](https://github.com/cclavin/PIOS/blob/main/tool-adapters/continue.md)
+- [OpenClaw](https://github.com/cclavin/PIOS/blob/main/tool-adapters/openclaw.md)
