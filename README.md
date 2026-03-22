@@ -76,7 +76,19 @@ This is the best fit for Claude Code, Cursor, and Windsurf setups that support M
 If your tool can edit files and run shell commands but does not have MCP attached, use the CLI directly. This is the safest default for Codex, Continue, local open-source agents, and terminal-first workflows.
 
 **Install PIOS:**
-Native package-manager installs via Homebrew and Winget are intended to be the primary path. Until those packages are published, use the Go fallback:
+
+Native package-manager installs via Homebrew and Winget are the recommended path.
+
+```bash
+# macOS / Linux (Homebrew)
+brew tap cclavin/tap
+brew install pios
+
+# Windows (Winget)
+winget install cclavin.pios
+```
+
+*Fallback for any OS with Go 1.22+:*
 ```bash
 go install github.com/cclavin/pios/cmd/pios@latest
 ```
@@ -242,6 +254,16 @@ PIOS is designed to be modular. It doesn't replace your favorite methodologies; 
 - **[Daniel Miessler's Personal AI Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure):** For users looking to standardize their global AI behavior and customized context. Combine a robust personal AI infrastructure (to define your developer identity) with PIOS (to enforce project-specific finishing) for a highly deterministic, end-to-end AI capability.
 - **Get Shit Done (GSD):** If you already subscribe to fast-iteration, momentum-focused workflows, PIOS serves as the strict, artifact-driven enforcer of those philosophies. It stops AI chat loops so you actually get the thing built.
 - **System Prompt Libraries:** Whether you use custom `CLAUDE.md` files or specialized Cursor profiles, PIOS operates flawlessly underneath them as the source-of-truth project state.
+
+---
+
+## Built With
+
+PIOS stands on the shoulders of these excellent open-source projects:
+
+- **[mark3labs/mcp-go](https://github.com/mark3labs/mcp-go):** The robust Go SDK for the Model Context Protocol that powers our MCP server.
+- **[GoReleaser](https://goreleaser.com/):** The standard for Go project delivery, enabling our Homebrew and Winget distribution.
+- **[VitePress](https://vitepress.dev/):** The documentation engine powering the the PIOS guide.
 
 ---
 

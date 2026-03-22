@@ -63,7 +63,7 @@ winget:
     short_description: "AI Project Execution Contract CLI"
     homepage: "https://github.com/cclavin/PIOS"
     repository:
-      owner: cclavin
+      owner: microsoft
       name: winget-pkgs
       branch: pios-{{.Version}}
       pull_request:
