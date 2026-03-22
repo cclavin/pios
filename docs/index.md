@@ -5,6 +5,9 @@ hero:
   name: "PIOS"
   text: "The AI Project Execution Contract."
   tagline: Reclaim agency. Prevent LLM hallucinations. Build predictable software.
+  image:
+    src: /pios-banner.gif
+    alt: PIOS Default CLI Action Output
   actions:
     - theme: brand
       text: Get Started
