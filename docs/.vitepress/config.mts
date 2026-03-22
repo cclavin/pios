@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+    base: '/PIOS/',
     title: "PIOS",
     description: "The AI Project Execution Contract",
     themeConfig: {
