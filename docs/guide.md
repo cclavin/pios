@@ -24,8 +24,20 @@ Once implementation starts, the agent works only from the active tasks, validate
 
 ### Preferred Install Path
 
-Native package-manager installs via Homebrew and Winget are intended to be the primary way to install PIOS. Until those packages are published, use the Go fallback:
+PIOS is distributed via native package managers:
 
+**macOS / Linux (Homebrew):**
+```bash
+brew tap cclavin/tap
+brew install pios
+```
+
+**Windows (Winget):**
+```powershell
+winget install cclavin.pios
+```
+
+**Any OS (Go Fallback):**
 ```bash
 go install github.com/cclavin/pios/cmd/pios@latest
 ```
@@ -66,7 +78,7 @@ This is the safest and most reliable workflow.
 
 If you want a shell-capable agent to bootstrap everything in one shot, use a prompt like this:
 
-> "First, install PIOS using the best available method for my OS. Prefer a native package-manager install if PIOS is available through Homebrew or Winget. If not, install Go 1.22+ and then run `go install github.com/cclavin/pios/cmd/pios@latest`. Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read `AGENTS.md` to understand the contract, then proceed through the PIOS phases."
+> "First, install PIOS using the best available method for my OS. Prefer a native package-manager install using `brew tap cclavin/tap && brew install pios` for macOS/Linux, or `winget install cclavin.pios` for Windows. If neither is available, fallback to `go install github.com/cclavin/pios/cmd/pios@latest`. Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read `AGENTS.md` to understand the contract, then proceed through the PIOS phases."
 
 Treat this as a bootstrap recipe, not the default daily workflow.
 

@@ -12,6 +12,7 @@
 - [Mission](#mission)
 - [How It Works](#how-it-works)
 - [Repository Layout](#repository-layout)
+- [Installation](#installation)
 - [Tutorials & Workflows](#tutorials--workflows)
 - [Example Prompts](#example-prompts)
 - [Backtesting PIOS](#backtesting-pios)
@@ -53,6 +54,26 @@ PIOS is **artifact-first**: it produces repo files, phase gates, and repeatable 
 
 ---
 
+## Installation
+
+PIOS is distributed via native package managers. Choose the best one for your OS:
+
+**macOS / Linux (Homebrew):**
+```bash
+brew tap cclavin/tap
+brew install pios
+```
+
+**Windows (Winget):**
+```powershell
+winget install cclavin.pios
+```
+
+**Any OS (Go Fallback):**
+```bash
+go install github.com/cclavin/pios/cmd/pios@latest
+```
+
 ## Tutorials & Workflows
 
 PIOS works best when you make two decisions up front: how your tool connects to the contract, and who advances the milestone. The recommended starting point is MCP or CLI with a human reviewing each completed milestone. Autonomous looping is available, but is still experimental.
@@ -74,12 +95,6 @@ This is the best fit for Claude Code, Cursor, and Windsurf setups that support M
 ### 2. The Command-Line Path (Default Human-Gated Loop)
 
 If your tool can edit files and run shell commands but does not have MCP attached, use the CLI directly. This is the safest default for Codex, Continue, local open-source agents, and terminal-first workflows.
-
-**Install PIOS:**
-Native package-manager installs via Homebrew and Winget are intended to be the primary path. Until those packages are published, use the Go fallback:
-```bash
-go install github.com/cclavin/pios/cmd/pios@latest
-```
 
 **Initialize a new project:**
 ```bash
@@ -121,7 +136,7 @@ If you are working in a chat tool that cannot write files or run commands, PIOS 
 If you have a shell-capable agent in an empty directory and want a one-shot bootstrap, you can give it a prompt that installs PIOS using the best available method for the host OS, runs `pios init`, reads `AGENTS.md`, and starts building. Treat this as a bootstrap recipe, not the default daily workflow.
 
 **Example Prompt:**
-> "First, install PIOS using the best available method for my OS. Prefer a native package-manager install if PIOS is available through Homebrew or Winget. If not, install Go 1.22+ and then run `go install github.com/cclavin/pios/cmd/pios@latest`.
+> "First, install PIOS using the best available method for my OS. Prefer a native package-manager install using `brew tap cclavin/tap && brew install pios` for macOS/Linux, or `winget install cclavin.pios` for Windows. If neither is available, fallback to `go install github.com/cclavin/pios/cmd/pios@latest`.
 >
 > Next, create a new directory for this project, enter it, and run `pios init`. After initialization, read the `AGENTS.md` file to understand the contract. Finally, proceed through the PIOS phases to build me a Python script that scrapes Hacker News."
 
