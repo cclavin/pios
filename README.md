@@ -1,6 +1,6 @@
 # π PIOS - AI Project Execution Contract
 
-[![Version](https://img.shields.io/github/v/release/cclavin/PIOS?color=orange&label=version)](https://github.com/cclavin/PIOS/releases) [![Go Version](https://img.shields.io/badge/go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev/) [![CI](https://github.com/cclavin/pios/actions/workflows/ci.yml/badge.svg)](https://github.com/cclavin/pios/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/cclavin/pios)](https://goreportcard.com/report/github.com/cclavin/PIOS) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/github/v/release/cclavin/PIOS?color=orange&label=version)](https://github.com/cclavin/pios/releases) [![Go Version](https://img.shields.io/badge/go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev/) [![CI](https://github.com/cclavin/pios/actions/workflows/ci.yml/badge.svg)](https://github.com/cclavin/pios/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/cclavin/pios)](https://goreportcard.com/report/github.com/cclavin/pios) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
   <img src="pios-banner.gif" alt="PIOS - Contracts over vibes. Build useful things, faster." />
