@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.0.0] - Unreleased
-### Planned
-- Goreleaser configuration for native distribution (Winget, Homebrew).
-- VitePress/Nextra documentation scaffold.
+## [v1.0.0] - 2026-03-31
+### Added
+- **MCP Server Integration:** Native JSON-RPC support for Claude Code, Cursor, and Windsurf through the `pios mcp` command.
+- **Package Manager Distribution:** Official formulas for Homebrew (macOS/Linux) and Winget (Windows) via Goreleaser.
+- **VitePress Documentation:** Launched comprehensive [documentation site](https://cclavin.github.io/pios/) covering workflows and tool adapters.
+- **Validated Backtesting:** Hardened the contract against complex Go and React multi-file architectures.
 
 ## [v0.5.0] - 2026-03-08
 ### Added
